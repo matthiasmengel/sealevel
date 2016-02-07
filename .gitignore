@@ -1,0 +1,8 @@
+figures/
+*pyc
+.DS_store
+*data/
+.ipynb_checkpoints/
+.ipynb
+experiments/
+data/input

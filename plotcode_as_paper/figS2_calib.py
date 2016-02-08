@@ -1,6 +1,11 @@
+""" Code for Fig. S2 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
-    Past Greenland ice sheet SID and calibrated with GMT as driver.
+    Note: You may not be able to fully plot this figure as it contains data that is not
+          openly available. Request data from authors or comment out.
 """
 
 import os, glob, sys
@@ -13,7 +18,9 @@ import cPickle as pickle
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_data as gd; reload(gd)
+#import get_calibration_data as gd; reload(gd)
+import get_gmt_data as ggd; reload(ggd)
+import sealevel as sl; reload(sl)
 import calib_settings as cs; reload(cs)
 import contributor_functions as cf; reload(cf)
 import dimarray as da
@@ -38,7 +45,7 @@ plot_these = ["thermexp"]#,"thermexp","gic","gis_smb","gis_sid"]
 for contrib in plot_these:
     # def get_obs_and_calibrated(contrib):
 
-    calibdata = pickle.load(open("../calibrationdata/"+contrib+".pkl","rb"))
+    calibdata = pickle.load(open("../data/calibration/"+contrib+".pkl","rb"))
     observations = cs.__dict__[contrib+"_observations"]
     cols = [cm.Accent(np.float(k)/len(observations)) for k in np.arange(len(observations))]
 
@@ -58,12 +65,12 @@ for contrib in plot_these:
         if contrib == "gis_sid":
             offset = i*1./400. + 1./400
 
-        gmt_anom = gd.giss_temp
+        gmt_anom = ggd.giss_temp
         temp_anomaly_year = params.temp_anomaly_year
         print temp_anomaly_year
         # apply an offset to temperature levels for box & colgan
         if obs == "box_colgan13":
-            gmt_anom = gd.giss_temp + gd.gis_colgan_temperature_offset
+            gmt_anom = ggd.giss_temp + sl.gis_colgan_temperature_offset
 
         sl_calculated = np.zeros([gmt_anom.shape[0],len(params.commitment_parameter)])
         for j,alpha in enumerate(params.commitment_parameter):

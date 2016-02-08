@@ -1,6 +1,11 @@
+""" Code for Fig. S1 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
-    Past Greenland ice sheet SID and calibrated with GMT as driver.
+    Note: You may not be able to fully plot this figure as it contains data that is not
+          openly available. Request data from authors or comment out.
 """
 
 import os, glob, sys
@@ -13,7 +18,7 @@ import cPickle as pickle
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_data as gd; reload(gd)
+import get_calibration_data as gd; reload(gd)
 import calib_settings as cs; reload(cs)
 import contributor_functions as cf; reload(cf)
 import dimarray as da

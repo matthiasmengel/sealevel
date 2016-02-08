@@ -12,7 +12,7 @@ import itertools
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_data as gd; reload(gd)
+import get_calibration_data as gd; reload(gd)
 import dimarray as da
 import collections
 
@@ -24,7 +24,7 @@ plt.rcParams['legend.fontsize']=6
 plt.rcParams['figure.figsize'] = 8,8
 plt.rcParams['figure.facecolor'] = "white"
 
-church_observed_700m = gd.church_observed["Thermal expansion"] - gd.church_observed["te_700_3000"] - gd.church_observed["te_below_3000"]
+church_observed_700m = gd.church_observed["thermexp"] - gd.church_observed["te_700_3000"] - gd.church_observed["te_below_3000"]
 church_observed_700m_2000m = gd.church_observed["te_700_3000"] + gd.church_observed["te_below_3000"] - gd.purkey10_below2000m
 
 zero = church_observed_700m_2000m.copy()

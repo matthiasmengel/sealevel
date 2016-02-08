@@ -1,5 +1,11 @@
+""" Code for Fig. S4 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
+    Note: You may not be able to fully plot this figure as it contains data that is not
+          openly available. Request data from authors or comment out.
 """
 
 import os, glob, sys
@@ -8,7 +14,9 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_data as gd; reload(gd)
+import get_calibration_data as gd; reload(gd)
+import sealevel as sl; reload(sl)
+import find_glacier_equi_coeffs as gicequi; reload(gicequi)
 from scipy import optimize
 
 
@@ -33,18 +41,18 @@ temp = np.linspace(0.,20.,100)
 ax1 = plt.subplot(111)
 
 i=0
-for dat in gd.gic_equi_marzeion12:
+for dat in gicequi.gic_equi_marzeion12:
     lbl = "Marzeion et al. 2012" if i==0 else ""
-    ax1.plot(gd.gic_temp_marzeion12,dat+i/10.,lw=2,marker="|",color=cols[i],markersize=10,
+    ax1.plot(gicequi.gic_temp_marzeion12,dat+i/10.,lw=2,marker="|",color=cols[i],markersize=10,
         label=lbl)
-    ax1.plot(temp,gd.gic_equi_funcs[i](temp)+i/10.,lw=3,color=cols[i])
+    ax1.plot(temp,sl.gic_equi_functions[i](temp)+i/10.,lw=3,color=cols[i])
     i+=1
 
-for dat in gd.gic_equi_radic:
+for dat in gicequi.gic_equi_radic:
     lbl = "Radic & Hock 2010" if i==16 else ""
-    ax1.plot(gd.gic_temp_radic,dat+i/10.,lw=2,marker="x",color=cols[i],
+    ax1.plot(gicequi.gic_temp_radic,dat+i/10.,lw=2,marker="x",color=cols[i],
         markersize=8, label=lbl)
-    ax1.plot(temp,gd.gic_equi_funcs[i](temp)+i/10.,lw=3,color=cols[i])
+    ax1.plot(temp,sl.gic_equi_functions[i](temp)+i/10.,lw=3,color=cols[i])
     i+=1
 
 l1 = ax1.legend(loc="lower right")

@@ -1,3 +1,11 @@
+""" Calibrate the sea level contriubtions as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
+
+"""
+
 import calibration; reload(calibration)
 import contributor_functions as cf; reload(cf)
 import get_calibration_data as gcd; reload(gcd)

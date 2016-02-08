@@ -10,9 +10,9 @@ inputdatadir = os.path.join(project_dir,"data/input/")
 try:
     hadcrut = np.loadtxt(inputdatadir+"hadcrut4/HadCRUT.4.4.0.0.annual_ns_avg.txt")
 except IOError:
-    raise IOError, "HADcrut v4.0 temperature data missing, please download to data/input/hadcrut4/"
-    print "you may use"
-    print "wget XXX"
+    raise IOError, ("HADcrut v4.0 temperature data missing",
+    "please run src/download_input_data.py first")
+
 
 hadcrut_temp = da.DimArray(hadcrut[:,1],axes=hadcrut[:,0],dims="time")
 ## define "preindustrial" as 1850:1860
@@ -25,9 +25,8 @@ hadcrut_temp -= hadcrut_temp[1850:1860].mean()
 try:
     giss_landocean = np.loadtxt(inputdatadir+"Observations/giss_landocean_2013.txt")
 except IOError:
-    print "HADcrut v4.0 temperature data missing, please download to data/input"
-    print "you may use"
-    print "wget XXX"
+    raise IOError, ("Giss global mean temperature data missing",
+    "please run src/download_input_data.py first")
 
 giss_temp  = giss_landocean[:,13] * 0.01 # column 14 is the annual global value
 giss_years = giss_landocean[:,0]

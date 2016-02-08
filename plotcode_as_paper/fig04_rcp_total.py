@@ -1,5 +1,11 @@
+""" Code for Fig. 3 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
+    Note: Please run src/do_projections first, then (in ipython)
+          run fig03_rcp_total.py -g -n numberofsamples
 """
 
 import os, glob, sys
@@ -12,7 +18,8 @@ from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
 import contributor_functions as cf; reload(cf)
-import get_data as gd; reload(gd)
+import get_ipcc_data as ipcc; reload(ipcc)
+#import get_calibration_data as ggd; reload(gd)
 import dimarray as da
 import optparse
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -50,8 +57,8 @@ if opts.get_data:
   realizations = 10000
   realizations = realizations  if opts.realizations==None else opts.realizations
   print "use",realizations,"realizations"
-  projection_data = pickle.load(open("../projectiondata/projected_contributons_"+
-      str(realizations)+".pkl","rb"))
+  projection_data = pickle.load(open("../data/projection/projected_slr_"+
+                                str(realizations)+"samples.pkl","rb"))
 
 plot_period = np.arange(2000,2101,1)
 
@@ -108,7 +115,7 @@ for k,scen in enumerate(["RCP85","RCP45","RCP3PD"]):
     # axy.plot([oloc,oloc],[low,upp],lw=3,color=rcpcoldict[scen])
     axy.fill_between([oloc-1,oloc+1],[low,low],[upp,upp],color=rcpcoldict[scen],alpha=.4,lw=0.)
     # axy.plot([oloc,oloc],[low,upp],lw=3,color=rcpcoldict[scen])
-    low,med,upp = gd.get_ipcc_range(scen,"mean_slr_2081_2100")
+    low,med,upp = ipcc.get_ipcc_range(scen,"mean_slr_2081_2100")
     # low,med,upp = gd.ipcc_contrib_estimates[name][scen] #gd.get_ipcc_range(scen,name)
     # axy.plot([xloc,xloc],[low,upp],color=rcpcoldict[scen],lw=3,alpha=0.5)
     axy.fill_between([xloc-1,xloc+1],[low,low],[upp,upp],color=rcpcoldict[scen],alpha=.4,lw=0.)

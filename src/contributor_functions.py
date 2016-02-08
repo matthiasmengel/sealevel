@@ -15,6 +15,7 @@ owarming_yin_2100 = np.array([1.61,1.16,1.25])
 gmt_warming = 2.72
 gis_gmt_subocean_ratio  = owarming_yin_2100.mean()/gmt_warming
 # gis_gmt_subocean_ratio  = 0.2
+
 ## Antarctica
 ais_gmt_subocean_ratio  = 0.2 # roughly from levermann_winkelmann14
 

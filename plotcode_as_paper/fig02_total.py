@@ -1,16 +1,26 @@
+""" Code for Fig. 2 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
-    currently excludes the Surface Mass Balance of Antarctica
+    Note: You may not be able to fully plot this figure as it contains data that is not
+    openly available. Request data from authors or comment out.
 """
 
-# import os, glob, sys
+
+import os, sys
 import numpy as np
 # import netCDF4 as nc
 import matplotlib.pyplot as plt
 from matplotlib import cm
 # import itertools
 # from scipy.io import loadmat
-import get_data as gd; reload(gd)
+lib_path = os.path.abspath('../src')
+sys.path.append(lib_path)
+import get_calibration_data as gd; reload(gd)
+import get_gmt_data as ggd; reload(ggd)
+import sealevel as sl; reload(sl)
 import calib_settings as cs; reload(cs)
 import dimarray as da
 import cPickle as pickle
@@ -40,7 +50,7 @@ def project(dummynumber):
       and one random tuple of independent and dependent parameter.
     """
 
-    driving_temperature = gd.giss_temp
+    driving_temperature = ggd.giss_temp
 
     # print contrib_name, temp_anomaly_year
     # use one of the observational dataset
@@ -49,7 +59,7 @@ def project(dummynumber):
     temp_anomaly_year = params.temp_anomaly_year
 
     if obs_choice == "box_colgan13":
-        driving_temperature += gd.gis_colgan_temperature_offset
+        driving_temperature += sl.gis_colgan_temperature_offset
 
     # print np.max(driving_temperature)
 
@@ -71,12 +81,12 @@ realizations = 10000
 for i,contrib_name in enumerate(contrib_ids):
 
     print "conribution", contrib_name
-    calibdata = pickle.load(open("../calibrationdata/"+contrib_name+".pkl","rb"))
+    calibdata = pickle.load(open("../data/calibration/"+contrib_name+".pkl","rb"))
 
     # dd = p.map_async(project,selected_numbers)
     proj = map(project,np.arange(realizations))
     all_contributions[contrib_name] = da.DimArray(proj,
-        axes=[np.arange(realizations),gd.giss_temp.time],dims=["realization","time"])
+        axes=[np.arange(realizations),ggd.giss_temp.time],dims=["realization","time"])
 
 all_contributions = da.DimArray(all_contributions,dims=["contribution","realization","time"])
 

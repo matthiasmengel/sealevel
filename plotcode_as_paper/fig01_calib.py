@@ -1,11 +1,16 @@
 
-""" matthias.mengel@pik
-    Past Greenland ice sheet SID and calibrated with GMT as driver.
+""" Code for Fig. 1 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
+
+    Note: You may not be able to fully plot this figure as it contains data that is not
+    openly available. Request data from authors or comment out.
 """
 
 import os, glob, sys
 import numpy as np
-import netCDF4 as nc
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import itertools
@@ -13,9 +18,11 @@ import cPickle as pickle
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_data as gd; reload(gd)
+import get_calibration_data as gd; reload(gd)
 import calib_settings as cs; reload(cs)
 import contributor_functions as cf; reload(cf)
+import get_gmt_data as ggd; reload(ggd)
+import sealevel as sl; reload(sl)
 import dimarray as da
 import collections
 import matplotlib.font_manager as font_manager
@@ -64,7 +71,7 @@ for p,contrib in enumerate(contrib_ids):
     axs.append(ax)
 
 
-    calibdata = pickle.load(open("../calibrationdata/"+contrib+".pkl","rb"))
+    calibdata = pickle.load(open("../data/calibration/"+contrib+".pkl","rb"))
     observations = cs.__dict__[contrib+"_observations"]
     cols = [cm.Accent_r(np.float(k)/len(observations)) for k in np.arange(len(observations))]
 
@@ -93,12 +100,12 @@ for p,contrib in enumerate(contrib_ids):
                 lw=1,color="grey")
 
 
-        gmt_anom = gd.giss_temp
+        gmt_anom = ggd.giss_temp
         temp_anomaly_year = params.temp_anomaly_year
         # print temp_anomaly_year
         # apply an offset to temperature levels for box & colgan
         if obs == "box_colgan13":
-            gmt_anom = gd.giss_temp + gd.gis_colgan_temperature_offset
+            gmt_anom = ggd.giss_temp + sl.gis_colgan_temperature_offset
 
         sl_calculated = np.zeros([gmt_anom.shape[0],len(params.commitment_parameter)])
         for j,alpha in enumerate(params.commitment_parameter):
@@ -122,7 +129,7 @@ for p,contrib in enumerate(contrib_ids):
         obsv = observations[obs]
         if contrib == "gic":
             obsv = (obsv.diff()*gd.anthropogenic_frac).dropna().cumsum()
-            print obsv.values
+            #print obsv.values
 
         if obs == "harig_simons15":
             ## only starts in 2003, so 1986-2005 mean not available,

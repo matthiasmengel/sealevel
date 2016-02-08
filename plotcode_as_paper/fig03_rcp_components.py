@@ -1,7 +1,13 @@
+""" Code for Fig. 3 as in
+    M. Mengel et al.
+    Future sea-level rise constrained by observations and long-term commitment
+    PNAS (2016)
+    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
 
-""" matthias.mengel@pik
-
+    Note: Please run src/do_projections first, then (in ipython)
+          run fig03_rcp_components.py -g -n numberofsamples
 """
+
 
 import os, glob, sys
 import numpy as np
@@ -13,7 +19,8 @@ from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
 import contributor_functions as cf; reload(cf)
-import get_data as gd; reload(gd)
+#import get_calibration_data as gd; reload(gd)
+import get_ipcc_data as ipcc; reload(ipcc)
 import dimarray as da
 import optparse
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -54,7 +61,8 @@ if opts.get_data:
   realizations = 10000
   realizations = realizations  if opts.realizations==None else opts.realizations
   print "use",realizations,"realizations"
-  projection_data = pickle.load(open("../projectiondata/projected_contributons_"+str(realizations)+".pkl","rb"))
+  projection_data = pickle.load(open("../data/projection/projected_slr_"+
+                                str(realizations)+"samples.pkl","rb"))
 
 # plt.close("all")
 plt.figure(3,figsize=(8,10))
@@ -104,7 +112,7 @@ for i,name in enumerate(contrib_ids[0:6]):
     # axy.plot([oloc,oloc],[low,upp],lw=3,color=rcpcoldict[scen])
     axy.fill_between([oloc-1,oloc+1],[low,low],[upp,upp],color=rcpcoldict[scen],alpha=.4,lw=0.)
     # axy.plot([oloc,oloc],[low,upp],lw=3,color=rcpcoldict[scen])
-    low,med,upp = gd.ipcc_contrib_estimates[name][scen] #gd.get_ipcc_range(scen,name)
+    low,med,upp = ipcc.ipcc_contrib_estimates[name][scen] #gd.get_ipcc_range(scen,name)
     # axy.plot([xloc,xloc],[low,upp],color=rcpcoldict[scen],lw=3,alpha=0.5)
     axy.fill_between([xloc-1,xloc+1],[low,low],[upp,upp],color=rcpcoldict[scen],alpha=.4,lw=0.)
     axy.plot([xloc-1,xloc+1],[med,med],color=rcpcoldict[scen],lw=3,alpha=1.)
@@ -117,7 +125,7 @@ for i,name in enumerate(contrib_ids[0:6]):
   ax.text(0.05,0.8,labels[name], transform=ax.transAxes,
       fontdict={'family':'sans-serif','weight':'bold'})
   if i==0:
-    axy.text(1.5,440,"M15",rotation="vertical",horizontalalignment='center',
+    axy.text(1.5,440,"M16",rotation="vertical",horizontalalignment='center',
       verticalalignment='center')
     axy.text(7.5,440,"IPCC",rotation="vertical",horizontalalignment='center',
       verticalalignment='center')

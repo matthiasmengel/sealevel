@@ -2,6 +2,7 @@ import calibration; reload(calibration)
 import contributor_functions as cf; reload(cf)
 import get_calibration_data as gcd; reload(gcd)
 import calib_settings as cs; reload(cs)
+import get_gmt_data as ggd; reload(ggd)
 import sealevel as sl; reload(sl)
 import numpy as np
 import collections
@@ -12,7 +13,7 @@ contrib_ids = ["thermexp","gic","gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
 calibrate_these = ["thermexp","gic","gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
-gmt = gcd.giss_temp
+gmt = ggd.giss_temp
 
 calibdatadir = "../data/calibration/"
 
@@ -85,12 +86,12 @@ if "gis_smb" in calibrate_these:
 
     for i,obs_gis in enumerate(cs.gis_smb_observations):
 
-        gmt_gis = gcd.giss_temp
+        gmt_gis = ggd.giss_temp
         observation_period = cs.observation_period["gis_smb"][obs_gis]
         temp_anomaly_year = cs.temp_anomaly_year["gis_smb"][obs_gis]
         ## apply an offset to temperature levels for box & colgan
         if obs_gis == "box_colgan13":
-            gmt_gis = gcd.giss_temp + gcd.gis_colgan_temperature_offset
+            gmt_gis = ggd.giss_temp + sl.gis_colgan_temperature_offset
             # observation_period = np.arange(1880,2013)
             # temp_anomaly_year  = None
 
@@ -119,12 +120,12 @@ if "gis_sid" in calibrate_these:
 
     for i,obs_gis in enumerate(cs.gis_sid_observations):
 
-        gmt_gis = gcd.giss_temp
+        gmt_gis = ggd.giss_temp
         observation_period = cs.observation_period["gis_sid"][obs_gis]
         temp_anomaly_year = cs.temp_anomaly_year["gis_sid"][obs_gis]
         ## apply an offset to temperature levels for box & colgan
         if obs_gis == "box_colgan13":
-            gmt_gis = gcd.giss_temp + gcd.gis_colgan_temperature_offset
+            gmt_gis = ggd.giss_temp + sl.gis_colgan_temperature_offset
 
         print "####",obs_gis
         # print observation_period
@@ -180,7 +181,6 @@ if "ant_smb" in calibrate_these:
     ais_prec_scaling=np.arange(2.,6.5,.5)*1e-3
     ais_smb_params = {}
 
-    # gmt_gis = gcd.giss_temp
     observation_period = "dummy"
     temp_anomaly_year = "dummy"
     sl_observation = "dummy"

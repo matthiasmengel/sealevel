@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pandas as pd
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir,"data/")
@@ -34,9 +33,10 @@ def func_creator(a,b):
     return func
 
 
-gic_equi_coeffs = pd.read_csv(inputdatadir+"glacier_equi/glacier_equi_coefficients.csv")
+gic_equi_coeffs = np.loadtxt(inputdatadir+"glacier_equi/glacier_equi_coefficients.csv")
 gic_equi_functions = []
-for coeffs in gic_equi_coeffs.values:
+for coeffs in gic_equi_coeffs:
+    #print coeffs
     gic_equi_functions.append(func_creator(*coeffs))
 
 

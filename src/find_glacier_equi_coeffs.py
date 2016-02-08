@@ -15,12 +15,12 @@ import os
 import scipy.io
 import numpy as np
 from scipy import optimize
-import pandas as pd
-import get_data as gd; reload(gd)
+import get_calibration_data as gcd; reload(gcd)
+import get_gmt_data as ggd; reload(ggd)
 
 
 #project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-inputdatadir = os.path.join("../inputdata/")
+inputdatadir = os.path.join("../data/input/")
 
 ######## Glacier equilibrium estimates ########
 
@@ -30,14 +30,14 @@ equi_exp_labels = [exp[0][0] for exp in gic_equ_marzeion12["experiments"]]
 # this is relative to the 1961-1990 mean temperature
 gic_temp_marzeion12 = np.array(np.squeeze(gic_equ_marzeion12["t_equi"]),dtype="float")
 # make it relative to preindustrial
-gic_temp_marzeion12 += gd.preind_to_1961_1990
+gic_temp_marzeion12 += ggd.preind_to_1961_1990
 ## remove the natural contribution from Marzeion equilibrium data.
 ## natural contribution is a temperature-independent value that can be approximated as
 ## the magnitude of natural contribution between 1851 and 2010, see green line in Fig. 1d, in
 ## http://www.sciencemag.org/content/345/6199/919.abstract
 ## we assume glaciers to be in equilibrium before 1851, as glacier volumes did not change much,
 ## see the leclerq 11 timeseries.
-nat_model_mean = gd.marzeion_gic_nat_up.mean(axis="model")/1000. # in m
+nat_model_mean = gcd.marzeion_gic_nat_up.mean(axis="model")/1000. # in m
 natural_gic_offset = nat_model_mean[2012] - nat_model_mean[1851]
 gic_equi_marzeion12 = gic_equ_marzeion12["sle_equi"]/1000. - natural_gic_offset
 
@@ -74,6 +74,6 @@ for gic_equi in gic_equi_marzeion12:
 for gic_equi in gic_equi_radic:
     gic_equi_coeffs.append(get_equi_coefficients(gic_temp_radic,gic_equi))
 
-gic_equi_coeffs = pd.DataFrame(gic_equi_coeffs,columns = ["a","b"])
-gic_equi_coeffs.to_csv("../data/glacier_equi/glacier_equi_coefficients.csv",
-                      index=False)
+gic_equi_coeffs = np.array(gic_equi_coeffs)
+np.savetxt("../data/glacier_equi/glacier_equi_coefficients.csv",gic_equi_coeffs,
+            fmt='%.8f', header="a        b")

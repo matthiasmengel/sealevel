@@ -1,12 +1,9 @@
 import os
 import numpy as np
 import dimarray as da
-import matplotlib.pyplot as plt
-from matplotlib import cm
 import scipy
 import scipy.interpolate
 import scipy.io
-import netCDF4
 import collections
 from scipy import optimize
 

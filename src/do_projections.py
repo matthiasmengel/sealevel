@@ -28,7 +28,7 @@ classname = {"gic":"glaciers_and_icecaps","thermexp":"thermal_expansion","gis":"
 proj_period= np.arange(1900,2101,1)
 
 # the number of monte carlo samples, 10000 used in PNAS paper
-nrealizations = 10000
+nrealizations = 100
 nrealizations = nrealizations  if opts.nrealizations==None else opts.nrealizations
 realizations = np.arange(nrealizations)
 

@@ -4,22 +4,21 @@ import dimarray as da
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import get_ipcc_data as ipcc; reload(ipcc)
 
+# plot settings
+plt.rcParams['xtick.major.pad']  = 10
+plt.rcParams['font.size']= 12
+plt.rcParams['lines.markeredgewidth']=2
+plt.rcParams['legend.fontsize']=12
+plt.rcParams['figure.figsize'] = 10,8
+plt.rcParams['figure.facecolor'] = "white"
+
+
 contrib_ids = ["thermexp","gic","gis_sid","gis_smb", "ant_sid","ant_smb", ]
 rcpcoldict = {"RCP3PD":"#2256A6","RCP45":"#73B2E1","RCP85":"#EE322D"}
 rcpnamedict = {"RCP3PD":"RCP26","RCP45":"RCP45","RCP85":"RCP85"}
 
 
 def fig3(projection_data):
-
-    # plot settings
-    plt.rcParams['xtick.major.pad']  = 10
-    plt.rcParams['font.size']= 12
-    plt.rcParams['lines.markeredgewidth']=2
-    plt.rcParams['legend.fontsize']=12
-    plt.rcParams['figure.figsize'] = 10,10
-    plt.rcParams['figure.facecolor'] = "white"
-    plt.rcParams['svg.fonttype'] = 'none'
-    plt.rcParams['pdf.fonttype'] = '42'
 
 
     labels = {"gic":"Mountain glaciers","thermexp":"Thermal expansion","gis_sid":"Greenland SID",
@@ -29,7 +28,7 @@ def fig3(projection_data):
                       wspace=0.1, hspace=None)
 
 
-    print "## sl contribtioon, scenario, 5th percentiles in 2100, median in 2100, 95th percentile in 2100"
+    # print "## sl contribtioon, scenario, 5th percentiles in 2100, median in 2100, 95th percentile in 2100"
 
     plot_period = np.arange(2000,2101,1)
     axs = []
@@ -57,7 +56,7 @@ def fig3(projection_data):
             ax.fill_between(plot_period,percentiles[0.05]*1e3,percentiles[0.95]*1e3,color=rcpcoldict[scen],alpha=.4,lw=.5)
             ax.plot(plot_period,percentiles[0.5]*1e3,lw=3,color=rcpcoldict[scen],alpha=1.,label=rcpnamedict[scen])#,label=name)
 
-            print "##",name,scen,": ", percentiles[0.05][2100]*1e3,percentiles[0.5][2100]*1e3,percentiles[0.95][2100]*1e3
+            # print "##",name,scen,": ", percentiles[0.05][2100]*1e3,percentiles[0.5][2100]*1e3,percentiles[0.95][2100]*1e3
             oloc -= 1.#plot_offset[name]
             xloc -= 1.#plot_offset[name]
             med = percentiles[0.5][np.arange(2081,2100,1)].mean()*1e3

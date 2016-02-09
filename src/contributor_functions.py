@@ -1,3 +1,17 @@
+# This file is part of SEALEVEL - a tool to estimates future sea-level rise
+# constrained by past obervations and long-term sea-level commitment
+# Copyright (C) 2016 Matthias Mengel working at PIK Potsdam
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# LICENSE.txt for more details.
+
 """ Sea level equilibrium responses and respective transient sea level functions.
     Equilibrium responses as in equ. 2,3,5 and 6 in M. Mengel et al., PNAS (2016)
     The transient response is constructed via equ. 1.

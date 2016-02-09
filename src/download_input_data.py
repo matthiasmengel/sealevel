@@ -32,3 +32,12 @@ download(info,source,"gisstemp")
 ## data as used in the analysis of M. Mengel et al., PNAS (2016)
 sedcmd = "sed '/^Year/ d' GLB.Ts+dSST.txt | sed '/^$/d' | sed '1,5d' | sed '135,$d'"
 subprocess.check_call("cd "+datadir+"gisstemp && "+sedcmd+" > giss_landocean_2013.txt",shell=True)
+
+
+info = "IPCC AR5 global mean temperature data from CMIP5 models"
+source = "http://www.ipcc.ch/report/ar5/wg1/docs/ar5_wg1_annexI_all.zip"
+download(info,source,"ipcc_ar5")
+cmd = "cd "+datadir+"ipcc_ar5 && unzip ar5_wg1_annexI_all.zip **WGIAR5_FD_AnnexI_series_tas_modelmean_*_world_annual.txt"
+subprocess.check_call(cmd,shell=True)
+cmd = "cd "+datadir+"ipcc_ar5 && mv -v WGIAR5_AnnexI_timeseries/tas/*/WGIAR5_FD_AnnexI_series_tas_modelmean_*_world_annual.txt ./"
+subprocess.check_call(cmd,shell=True)

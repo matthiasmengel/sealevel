@@ -1,17 +1,3 @@
-# This file is part of SEALEVEL - a tool to estimates future sea-level rise
-# constrained by past obervations and long-term sea-level commitment
-# Copyright (C) 2016 Matthias Mengel working at PIK Potsdam
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# LICENSE.txt for more details.
-
 import os
 import numpy as np
 import dimarray as da
@@ -37,12 +23,12 @@ hadcrut_temp -= hadcrut_temp[1850:1860].mean()
 
 ######## GISS global mean temperature observations ########
 try:
-    giss_landocean = np.loadtxt(inputdatadir+"gisstemp/giss_landocean_2013.txt")
+    giss_landocean = np.loadtxt(inputdatadir+"gisstemp/giss_landocean_2013.txt",usecols = (0,13))
 except IOError:
     raise IOError, ("Giss global mean temperature data missing, " +
                     "please run src/download_input_data.py first.")
 
-giss_temp  = giss_landocean[:,13] * 0.01 # column 14 is the annual global value
+giss_temp  = giss_landocean[:,1] * 0.01 # column 14 is the annual global value
 giss_years = giss_landocean[:,0]
 giss_temp = da.DimArray(giss_temp,axes=giss_years,dims="time")#[1900:]
 # make sure we are relative to the 1951:1980 period

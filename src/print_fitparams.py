@@ -16,29 +16,30 @@ import numpy as np
 # import get_data as gd; reload(gd)
 import cPickle as pickle
 
-contrib_ids = ["thermexp","gic","gis_sid","gis_smb",  "ant_sid", "ant_smb"]
-rcpcoldict = {"RCP3PD":"#3b4ba8","RCP45":"yellow","RCP85":"#ee1d23"}
-labels = {"gic":"Mountain glaciers","thermexp":"Thermal expansion","gis_sid":"Greenland SID",
-"gis_smb":"Greenland SMB","ant_sid":"Antarctica SID","ant_smb":"Antarctica SMB"}
+contrib_ids = ["thermexp", "gic", "gis_sid", "gis_smb", "ant_sid", "ant_smb"]
+rcpcoldict = {"RCP3PD": "#3b4ba8", "RCP45": "yellow", "RCP85": "#ee1d23"}
+labels = {"gic": "Mountain glaciers", "thermexp": "Thermal expansion", "gis_sid": "Greenland SID",
+          "gis_smb": "Greenland SMB", "ant_sid": "Antarctica SID", "ant_smb": "Antarctica SMB"}
 
 
 def rd(numb):
-  return '%s' % float('%.3g' % numb)
+    return '%s' % float('%.3g' % numb)
+
 
 def minmax(array):
-  return rd(np.min(array))+" to "+rd(np.max(array))
+    return rd(np.min(array)) + " to " + rd(np.max(array))
 
 for name in contrib_ids:
-  print labels[name],
-  calibdata = pickle.load(open("../calibrationdata/"+name+".pkl","rb"))
-  calibrated_param = np.array([])
-  for obs in calibdata["params"]:
-    # print obs,
-    cal_par_obs = calibdata["params"][obs].calibrated_parameter
-    calibrated_param = np.append(calibrated_param,cal_par_obs)
+    print labels[name],
+    calibdata = pickle.load(open("../calibrationdata/" + name + ".pkl", "rb"))
+    calibrated_param = np.array([])
+    for obs in calibdata["params"]:
+        # print obs,
+        cal_par_obs = calibdata["params"][obs].calibrated_parameter
+        calibrated_param = np.append(calibrated_param, cal_par_obs)
 
-  print minmax(calibdata["params"][obs].commitment_parameter),
-  print minmax(calibrated_param)
+    print minmax(calibdata["params"][obs].commitment_parameter),
+    print minmax(calibrated_param)
 
 
 # contrib_names = ["Thermal expansion","Mountain glaciers (anth)","Greenland SMB", "Greenland SID", "Antarctica SMB", "Antarctica SID"]
@@ -68,7 +69,6 @@ for name in contrib_ids:
 # "Antarctica SMB":"dummy, no calibration here"}
 
 
-
 # def rd(numb): return '%s' % float('%.3g' % numb)
 
 # # write contributions to file
@@ -91,7 +91,6 @@ for name in contrib_ids:
 # # fitparams_file.write("median, lower perc, upper perc\n")
 # # fitparams_file.write("## single contributions ##\n")
 # fitparams_file.close()
-
 
 
 # for i,name in enumerate(contrib_names):

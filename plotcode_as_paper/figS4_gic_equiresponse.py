@@ -22,23 +22,28 @@
           openly available. Request data from authors or comment out.
 """
 
-import os, glob, sys
+import os
+import glob
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_calibration_data as gd; reload(gd)
-import sealevel as sl; reload(sl)
-import find_glacier_equi_coeffs as gicequi; reload(gicequi)
+import get_calibration_data as gd
+reload(gd)
+import sealevel as sl
+reload(sl)
+import find_glacier_equi_coeffs as gicequi
+reload(gicequi)
 from scipy import optimize
 
 
-plt.rcParams['xtick.major.pad']  = 6
-plt.rcParams['font.size']= 14
-plt.rcParams['lines.markeredgewidth']=2
-plt.rcParams['legend.fontsize']=14
-plt.rcParams['figure.figsize'] = 8,10
+plt.rcParams['xtick.major.pad'] = 6
+plt.rcParams['font.size'] = 14
+plt.rcParams['lines.markeredgewidth'] = 2
+plt.rcParams['legend.fontsize'] = 14
+plt.rcParams['figure.figsize'] = 8, 10
 plt.rcParams['figure.facecolor'] = "white"
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['pdf.fonttype'] = '42'
@@ -48,26 +53,28 @@ runname = __file__.split("/")[-1][0:-3]
 plt.figure(8)
 plt.clf()
 
-cols = [cm.Accent(np.float(k)/20) for k in np.arange(20)]
+cols = [cm.Accent(np.float(k) / 20) for k in np.arange(20)]
 
-temp = np.linspace(0.,20.,100)
+temp = np.linspace(0., 20., 100)
 
 ax1 = plt.subplot(111)
 
-i=0
+i = 0
 for dat in gicequi.gic_equi_marzeion12:
-    lbl = "Marzeion et al. 2012" if i==0 else ""
-    ax1.plot(gicequi.gic_temp_marzeion12,dat+i/10.,lw=2,marker="|",color=cols[i],markersize=10,
-        label=lbl)
-    ax1.plot(temp,sl.gic_equi_functions[i](temp)+i/10.,lw=3,color=cols[i])
-    i+=1
+    lbl = "Marzeion et al. 2012" if i == 0 else ""
+    ax1.plot(gicequi.gic_temp_marzeion12, dat + i / 10., lw=2, marker="|", color=cols[i], markersize=10,
+             label=lbl)
+    ax1.plot(temp, sl.gic_equi_functions[i](
+        temp) + i / 10., lw=3, color=cols[i])
+    i += 1
 
 for dat in gicequi.gic_equi_radic:
-    lbl = "Radic & Hock 2010" if i==16 else ""
-    ax1.plot(gicequi.gic_temp_radic,dat+i/10.,lw=2,marker="x",color=cols[i],
-        markersize=8, label=lbl)
-    ax1.plot(temp,sl.gic_equi_functions[i](temp)+i/10.,lw=3,color=cols[i])
-    i+=1
+    lbl = "Radic & Hock 2010" if i == 16 else ""
+    ax1.plot(gicequi.gic_temp_radic, dat + i / 10., lw=2, marker="x", color=cols[i],
+             markersize=8, label=lbl)
+    ax1.plot(temp, sl.gic_equi_functions[i](
+        temp) + i / 10., lw=3, color=cols[i])
+    i += 1
 
 l1 = ax1.legend(loc="lower right")
 # for l in l1.get_lines():
@@ -79,12 +86,12 @@ l1 = ax1.legend(loc="lower right")
 l1.draw_frame(0)
 for ax in [ax1]:
     ax.grid()
-    ax.set_xlim(0.,10.)
-    ax.set_ylim(0.,2.3)
+    ax.set_xlim(0., 10.)
+    ax.set_ylim(0., 2.3)
 
 ax1.set_ylabel("Equilibrium sea-level contribution in m")
 ax1.set_xlabel("Global temperature above preindustrial in K")
 
 plt.draw()
 plt.show()
-plt.savefig("../figures/"+runname+".pdf")
+plt.savefig("../figures/" + runname + ".pdf")

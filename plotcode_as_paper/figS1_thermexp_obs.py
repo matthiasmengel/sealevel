@@ -22,7 +22,9 @@
           openly available. Request data from authors or comment out.
 """
 
-import os, glob, sys
+import os
+import glob
+import sys
 import numpy as np
 import netCDF4 as nc
 import matplotlib.pyplot as plt
@@ -32,17 +34,20 @@ import cPickle as pickle
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import get_calibration_data as gd; reload(gd)
-import calib_settings as cs; reload(cs)
-import contributor_functions as cf; reload(cf)
+import get_calibration_data as gd
+reload(gd)
+import calib_settings as cs
+reload(cs)
+import contributor_functions as cf
+reload(cf)
 import dimarray as da
 import collections
 
-plt.rcParams['xtick.major.pad']  = 10
-plt.rcParams['font.size']= 12
-plt.rcParams['lines.markeredgewidth']=2
-plt.rcParams['legend.fontsize']=12
-plt.rcParams['figure.figsize'] = 8,8
+plt.rcParams['xtick.major.pad'] = 10
+plt.rcParams['font.size'] = 12
+plt.rcParams['lines.markeredgewidth'] = 2
+plt.rcParams['legend.fontsize'] = 12
+plt.rcParams['figure.figsize'] = 8, 8
 plt.rcParams['figure.facecolor'] = "white"
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['pdf.fonttype'] = '42'
@@ -63,18 +68,15 @@ plt.rcParams['pdf.fonttype'] = '42'
 # ("purkey10",gd.purkey10_below2000m)])
 
 
-
 fig = plt.figure(6)
-plt.subplots_adjust(bottom=0.1,top=0.95)
+plt.subplots_adjust(bottom=0.1, top=0.95)
 plt.clf()
 ax = plt.subplot(111)
 
 
-
 observations = cs.contrib_upper700
 # for obs in cs.contrib_upper700:
-cols = [cm.Accent(np.float(k)/6) for k in np.arange(6)]
-
+cols = [cm.Accent(np.float(k) / 6) for k in np.arange(6)]
 
 
 # for contrib in plot_these:
@@ -93,34 +95,32 @@ def rl(ts):
     return ts - ts[1986:2005].mean()
 
 of = 100.
-i=0
-offset = i/of
-ax.plot(gd.purkey10_below2000m.time, rl(gd.purkey10_below2000m) +offset,
-    label="purkey10 below 2000m",lw=2,
-    color=cols[i])
+i = 0
+offset = i / of
+ax.plot(gd.purkey10_below2000m.time, rl(gd.purkey10_below2000m) + offset,
+        label="purkey10 below 2000m", lw=2,
+        color=cols[i])
 i += 1
 for obs in cs.contrib_700_2000m:
-    offset = i/of
-    ax.plot(cs.contrib_700_2000m[obs].time, rl(cs.contrib_700_2000m[obs]) +offset,
-        label=obs+" 700m-2000m",lw=2,
-        color=cols[i])
+    offset = i / of
+    ax.plot(cs.contrib_700_2000m[obs].time, rl(cs.contrib_700_2000m[obs]) + offset,
+            label=obs + " 700m-2000m", lw=2,
+            color=cols[i])
     i += 1
 for obs in cs.contrib_upper700:
-    offset = i/of
-    ax.plot(cs.contrib_upper700[obs].time, rl(cs.contrib_upper700[obs]) +offset,
-        label=obs+" 0m-700m",lw=2,
-        color=cols[i])
+    offset = i / of
+    ax.plot(cs.contrib_upper700[obs].time, rl(cs.contrib_upper700[obs]) + offset,
+            label=obs + " 0m-700m", lw=2,
+            color=cols[i])
     i += 1
-
-
 
 
 # ncol = 2 if contrib == "thermexp" else 1
-l2 = ax.legend(loc="upper left",ncol=2)
+l2 = ax.legend(loc="upper left", ncol=2)
 l2.draw_frame(0)
 
 # if contrib == "thermexp":
-ax.set_ylim(-0.008,0.062)
+ax.set_ylim(-0.008, 0.062)
 
 ax.set_xlabel("Time in years")
 ax.set_ylabel("Sea-level contribution in m")
@@ -131,4 +131,4 @@ plt.draw()
 plt.show()
 
 runname = __file__.split("/")[-1][0:-3]
-plt.savefig("../figures/"+runname+".pdf")
+plt.savefig("../figures/" + runname + ".pdf")

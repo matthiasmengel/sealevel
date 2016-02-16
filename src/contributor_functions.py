@@ -12,8 +12,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
+
 """ Sea level equilibrium responses and respective transient sea level functions.
-    Equilibrium responses as in equ. 2,3,5 and 6 in M. Mengel et al., PNAS (2016)
+    Equilibrium responses as in equ. 2,3,5 and 6 in M. Mengel et al., PNAS (2016).
     The transient response is constructed via equ. 1.
 """
 
@@ -92,7 +93,7 @@ class glaciers_and_icecaps(object):
             M. Mengel et al., PNAS (2016) """
 
         if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss first year of SL
+            # do not let temperature drive ice loss before first year of SL
             # observation
             delta_gmt -= delta_gmt[self.temp_anomaly_year]
             delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
@@ -136,13 +137,12 @@ class surfacemassbalance_gis(object):
             M. Mengel et al., PNAS (2016) """
 
         if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss first year of SL
+            # do not let temperature drive ice loss before first year of SL
             # observation
             delta_gmt -= delta_gmt[self.temp_anomaly_year]
             delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
 
         delta_gmt = delta_gmt.values
-        # print delta_gmt
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
         sl_rate = 0.0
 
@@ -211,7 +211,7 @@ class solid_ice_discharge_gis(object):
         oceantemp = temperature
 
         if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss first year of SL
+            # do not let temperature drive ice loss before first year of SL
             # observation
             oceantemp -= oceantemp[self.temp_anomaly_year]
             oceantemp[oceantemp.time < self.temp_anomaly_year] = 0.
@@ -257,7 +257,7 @@ class solid_ice_discharge_ais(object):
             M. Mengel et al., PNAS (2016) """
 
         if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss first year of SL
+            # do not let temperature drive ice loss before first year of SL
             # observation
             temperature -= temperature[self.temp_anomaly_year]
             temperature[temperature.time < self.temp_anomaly_year] = 0.
@@ -274,15 +274,3 @@ class solid_ice_discharge_ais(object):
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
 
         return discharge
-
-
-################################################
-
-class total_contribution(object):
-
-    """ not used. """
-
-    def __init__(self, te_alpha, gic_modelno, gis_smbcoeff,):
-
-        self.dtime = dtime
-        self.alpha = alpha

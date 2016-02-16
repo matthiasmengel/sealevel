@@ -168,31 +168,6 @@ temp_anomaly_year["ant_sid"] = {
 ######## Antarctica surface mass balance ########
 
 # these are dummies and not used, just to avoid "if code" in routines.
-
 ant_smb_observations = collections.OrderedDict([("ligtenberg13", "dummy")])
 observation_period["ant_smb"] = {"ligtenberg13": np.arange(1970, 2009, 1)}
 temp_anomaly_year["ant_smb"] = {"ligtenberg13": None}
-
-
-# ## models are calibrated over the observation period.
-# observation_period = {
-# "thermexp":np.arange(1970,2009,1),
-# # "gic":np.arange(1940,2014,1),
-# "gic":np.arange(1940,2014,1),
-# # "gis":np.arange(1960,2009,1),
-# "gis_smb":np.arange(1960,2009,1),
-# "gis_sid":np.arange(1970,2009,1),
-# "ant_sid":np.arange(1960,2009,1),
-# "ant_smb":np.arange(1970,2009,1) # this is fake for plotting
-# }
-
-# ## temp anomaly year is when GMT first kicks in to drive SL of parametrization.
-# ## if None, full GMT period is taken
-# temp_anomaly_year = {
-# "thermexp":None,
-# "gic":None,
-# "gis_smb":None,
-# "gis_sid":1961,
-# "ant_sid":1990,
-# "ant_smb":None,
-# }

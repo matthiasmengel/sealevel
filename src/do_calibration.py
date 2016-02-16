@@ -12,13 +12,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
-""" Calibrate the sea level contriubtions as in
-    M. Mengel et al.
-    Future sea-level rise constrained by observations and long-term commitment
-    PNAS (2016)
-    (C) Matthias Mengel working at Potsdam Institute for Climate Impact Research
-
-"""
 
 import calibration
 reload(calibration)
@@ -55,8 +48,6 @@ calibdatadir = "../data/calibration/"
 
 if "thermexp" in calibrate_these:
 
-    # sl_observation = gcd.church_observed["Thermal expansion"]
-
     # This is the basis of Fig 10.34 of AR4, and in (c) they have pretty much levelled off by year 3000
     # Bern2D-CC 0.488; CLIMBER-2 0.458; CLIMBER-3a 0.200; MIT 0.214; MoBidiC
     # 0.626; UCL 0.386
@@ -76,10 +67,6 @@ if "thermexp" in calibrate_these:
                                         sl_observation, alpha_te, sl_contributor, observation_period, temp_anomaly_year)
         calib.calibrate()
         te_params[obs_te] = calib
-        # te_condensed = np.append(te_condensed,te_params[obs_te][1])
-
-    # first axis along alpha_te
-    # te_condensed = te_condensed.reshape(len(alpha_te),-1)
 
     outfile = calibdatadir + "thermexp.pkl"
     pickle.dump({"params": te_params}, open(outfile, "wb"), protocol=2)
@@ -127,8 +114,6 @@ if "gis_smb" in calibrate_these:
         # apply an offset to temperature levels for box & colgan
         if obs_gis == "box_colgan13":
             gmt_gis = ggd.giss_temp + sl.gis_colgan_temperature_offset
-            # observation_period = np.arange(1880,2013)
-            # temp_anomaly_year  = None
 
         print "####", obs_gis
         # print observation_period
@@ -139,7 +124,6 @@ if "gis_smb" in calibrate_these:
         gis_smb_params[obs_gis] = calib
 
     outfile = calibdatadir + "gis_smb.pkl"
-    # only params will be used for projections
     pickle.dump({"params": gis_smb_params}, open(outfile, "wb"), protocol=2)
 
 
@@ -179,7 +163,7 @@ if "gis_sid" in calibrate_these:
 if "ant_sid" in calibrate_these:
 
     sl_contributor = cf.solid_ice_discharge_ais
-    # levermann 13 coefficients.
+    # Levermann et al. PNAS (2013) coefficients.
     ant_sid_coeff = np.arange(1.0, 1.55, 0.05)
     ant_sid_params = {}
 
@@ -197,7 +181,6 @@ if "ant_sid" in calibrate_these:
         ant_sid_params[obs_ant_sid] = calib
 
     outfile = calibdatadir + "ant_sid.pkl"
-    # only params will be used for projections
     pickle.dump({"params": ant_sid_params}, open(outfile, "wb"), protocol=2)
 
 

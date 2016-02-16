@@ -14,9 +14,7 @@
 
 
 """ find coefficients for analytic glacier equilibrium functions from
-    Radic & Hock (2010) and
-    Marzeion et al, Cryosphere 2012
-    data.
+    Radic & Hock (2010) and Marzeion et al, Cryosphere 2012 data.
     See 'Estimates of equilibrium contribution for glaciers and ice caps'
     in the supplementary material in Mengel et al., PNAS 2016.
     See also supplementary Fig. 4.
@@ -34,8 +32,6 @@ reload(gcd)
 import get_gmt_data as ggd
 reload(ggd)
 
-
-#project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join("../data/input/")
 
 ######## Glacier equilibrium estimates ########

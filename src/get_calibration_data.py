@@ -445,8 +445,6 @@ contrib_to_slr -= contrib_to_slr[0]
 mouginot_ase_sl = da.DimArray(
     np.cumsum(contrib_to_slr), axes=np.arange(
         1974, 2014), dims="time") * gt_to_m
-# church_observed["Antarctica SID"] =
-# mouginot_ase_sl#church_observed["Antarctica"]
 
 # Harig and Simons 2015, total antarctic mass change in Gt/y
 harig_data = np.loadtxt(

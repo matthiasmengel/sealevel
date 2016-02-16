@@ -27,10 +27,6 @@ import itertools
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-import contributor_functions as cf
-reload(cf)
-import get_data as gd
-reload(gd)
 import dimarray as da
 import optparse
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -60,9 +56,9 @@ if opts.get_data:
     print "use", realizations, "realizations"
     projection_data = pickle.load(
         open(
-            "../projectiondata/projected_contributons_" +
+            "../data/projection/projected_slr_" +
             str(realizations) +
-            ".pkl",
+            "samples.pkl",
             "rb"))
 
 
@@ -77,35 +73,25 @@ def rd(array, percentile, years):
     # in mm
     return '%s' % float('%.3g' % perc)
 
+## switch for the 2081-2100 mean
 printyr = 2100
 #printyr = np.arange(2081,2101,1)
 print "## years", printyr
-# printdata = {}
 
-# print "#### Projections ####"
+
 print "RCP3PD", "RCP45", "RCP85"
 for i, name in enumerate(contrib_ids):
-    # printdata[name] = {}
     print labels[name], ":",
     for k, scen in enumerate(["RCP3PD", "RCP45", "RCP85", ]):
 
         contrib = projection_data[scen][name] * 1.e3
-        # plot_period_indices = contrib.time.searchsorted(plot_period)
         # anomaly to 1986-2005
         contrib = contrib - contrib[1986:2005, :].mean(axis="time")
-        # pandas handles NaNs within percentile calculus
-        # contrib     = contrib.T.to_pandas()
-        # percentiles = da.from_pandas(contrib.quantile([0.05,0.5,0.95])*1.e3,
-        #   dims=["percentile","time"])
 
         if scen != "RCP85":
             print rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")",
         else:
             print rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")"
-
-        # printdata[name][scen]=percentiles
-        # single_contribs[name][scen] = np.array([median[-1],lower_perc[-1],upper_perc[-1]])
-
 
 #### total slr; sum up contributions first ####
 
@@ -135,12 +121,3 @@ for k, scen in enumerate(["RCP3PD", "RCP45", "RCP85", ]):
     med = np.percentile(mn, 50)
     upp = np.percentile(mn, 95)
     print rdd(med), "(", rdd(low), "to", rdd(upp), ")",
-
-
-# pdata = da.DimArray(printdata,dims=["contribution","scenario","percentile","time"])
-
-
-# for scen in ["RCP3PD","RCP45","RCP85"]:
-#     total = printdata[:,scen,:].sum(axis="contribution")
-# print
-# rdd(total['median']),"(",rdd(total['0.05']),"to",rdd(total['0.95']),")",

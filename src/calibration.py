@@ -55,16 +55,6 @@ class Calibration(object):
 
             self.cal_period = np.arange(cal_period_0, cal_period_1 + 1, 1)
 
-        # if temp_anomaly_year != None:
-        #     ## do not apply temperature as a driver before first year of SL observation
-        #     self.gmt -= self.gmt[temp_anomaly_year]
-        #     self.gmt[self.gmt.time<temp_anomaly_year] = 0.
-
-        # print self.cal_period
-        # sl_observation -= sl_observation[observation_period[0]]
-        # self.sl_observation = sl_observation
-
-        # print self.sl_observation[self.obs_period]
 
     def calc_residuals(self, param, sl_function):
         """ Only residuals in calibration period play a role for fit.
@@ -91,17 +81,10 @@ class Calibration(object):
 
         return residuals.values
 
-    # def find_sl_gmt_overlap(self):
-
-    #     sl_obs_on_gmt_axis = self.gmt.copy()
-    #     sl_obs_on_gmt_axis[:] = 0.
-    #     sl_obs_on_gmt_axis[self.obs_period] = self.sl_obervation[self.obs_period]
-    #     return sl_obs_on_gmt_axis
 
     def calibrate(self):
 
-        # sl_obs_on_gmt_axis = self.find_sl_gmt_overlap()
-
+        ## first guess for tau
         tau0 = 100.
         optimal_tau = np.zeros_like(self.commitment_parameter, dtype="float")
         for i, cparam in enumerate(self.commitment_parameter):
@@ -115,18 +98,3 @@ class Calibration(object):
 
         self.calibrated_parameter = optimal_tau
         return [self.commitment_parameter, optimal_tau]
-
-    # def calc_contribution(self,gmt_anomaly):
-
-    #     """ calculates sea level response based on fitted parameters and
-    #         external temperature input. calibrate() has to be run before.
-    #     """
-
-    #     for j,cparam in enumerate(self.commitment_parameter):
-    #         tau = self.calibrated_parameter[j]
-
-    #         cl = self.sl_contributor(cparam,self.temp_anomaly_year)
-    #         sl_calculated = da.DimArray(cl.calc_contribution(gmt_anomaly,tau),
-    #                             axes=gmt_anom.time,dims="time")
-
-    #     return

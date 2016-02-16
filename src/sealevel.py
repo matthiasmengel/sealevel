@@ -12,20 +12,21 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
+
 import os
 import numpy as np
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir, "data/")
 
-######## paramerters that need to be known for calibrations and projection
+######## parameters that need to be known for calibrations and projection
 
 # add temperature offset to be used with the box & colgan 2013 data to fit past observations
 # similar offset is used by e.g. Rahmstorf 2007, Science.
 gis_colgan_temperature_offset = 0.5
 
 
-######## equilibrium sea level functions ########
+######## equilibrium sea level functions for mountain glaciers ########
 
 def gic_equi_func(equi_temp, a, b):
     """ assume exponential functional form. This is justified, because
@@ -54,8 +55,8 @@ for coeffs in gic_equi_coeffs:
     gic_equi_functions.append(func_creator(*coeffs))
 
 
-# project function for Monte-Carlo sampling
 
+######## project function for Monte-Carlo sampling ########
 
 def project(gmt, proj_period, calibdata, sample_number):
     """

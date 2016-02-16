@@ -13,9 +13,6 @@
 # LICENSE.txt for more details.
 
 
-""" matthias.mengel@pik
-"""
-
 import os
 import glob
 import sys
@@ -65,11 +62,8 @@ for scen in ["RCP3PD", "RCP45", "RCP85"]:
 
     print "scenario", scen
 
-# def do_projection(scen):
     projection_data[scen] = {}
     gmt = mag.magicc_gmt[scen]
-    #selected_numbers = np.random.random_integers(0,len(magicc_gmt.runnumber)-1,realizations)
-    #magicc_selected  = magicc_gmt[:,selected_numbers]
 
     for i, contrib_name in enumerate(project_these):
 
@@ -81,16 +75,13 @@ for scen in ["RCP3PD", "RCP45", "RCP85"]:
                 ".pkl",
                 "rb"))
 
-        # dd = p.map_async(project,selected_numbers)
         proj = np.zeros([len(proj_period), nrealizations])
 
         for n in realizations:
             proj[:, n] = sl.project(gmt, proj_period, calibdata, n)
 
-        #proj = map(project,selected_numbers)
         pdata = da.DimArray(proj, axes=[proj_period, realizations],
                             dims=["time", "runnumber"])
-        # pdata = pdata.dropna(axis=1)
         projection_data[scen][contrib_name] = pdata
 
 fname = "../data/projection/projected_slr_" + \

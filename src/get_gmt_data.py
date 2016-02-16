@@ -40,11 +40,8 @@ except IOError:
 giss_temp = giss_landocean[:, 1] * 0.01  # column 14 is the annual global value
 giss_years = giss_landocean[:, 0]
 giss_temp = da.DimArray(giss_temp, axes=giss_years, dims="time")  # [1900:]
-# make sure we are relative to the 1951:1980 period
+## make giss global mean temperature relative to preindustrial, which is here defined
+## as the 1850:1860 hadcrut mean. The global mean temperature anomaly defined this way
+## is used throughout the code for calibration and projections.
 giss_temp = giss_temp - giss_temp[1951:1980].mean()
-# we choose our general temperature forcing to be relative to the
-# cold 1900 to 1910 period to avoid negative temperatures that may not work well
-# in our slr parametrizations
-# giss_preindustrial = giss_temp[1900:1910].mean()
-# giss_temp_2 = giss_temp - giss_preindustrial
-giss_temp = giss_temp + preind_to_1951_1980  # - giss_preindustrial
+giss_temp = giss_temp + preind_to_1951_1980

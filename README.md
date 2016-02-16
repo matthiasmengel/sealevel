@@ -1,8 +1,7 @@
-Source code repository for
 
 ## Sea level constrained by observations and commitment
 
-If you make use of the code, please cite
+If you make use of this code, please cite
 
 ```
 Future sea level rise constrained by observations and long-term commitment
@@ -13,12 +12,12 @@ This repository contains the code to produce the results as presented in the pap
 There are two main parts: The calibration of the model and using the model for projections.
 
 ### Making projections
-See the [examples/projections.ipynb](https://github.com/matthiasmengel/sealevel/blob/master/examples/projection.ipynb) for projections using a sample global temperature mean timeseries.
-If you do not have [jupyter](http://jupyter.org/) notebook, [install](http://jupyter.readthedocs.org/en/latest/install.html) it or look at example.py.
+See the [projections.ipynb](https://github.com/matthiasmengel/sealevel/blob/master/examples/projection.ipynb) for projections using a sample global temperature mean timeseries.
+If you do not have [jupyter](http://jupyter.org/) notebook, [install](http://jupyter.readthedocs.org/en/latest/install.html) it or look at [projection.py](https://github.com/matthiasmengel/sealevel/blob/master/examples/projection.py).
 
 ### Recalibrating the model
-See `src/do_calibration.py`.
-Model calibration is based on data for past thermal expansion, glacier loss and ice sheet evolution, that is not completely openly available. Please contact the M. Mengel or the authors of the datasets applied for calibrition if you plan to recalibrate or extend the model.
+See [src/do_calibration.py](https://github.com/matthiasmengel/sealevel/blob/master/src/do_calibration.py).
+Model calibration is based on data for past thermal expansion, glaciers and ice caps loss and ice sheet evolution, which is not completely openly available. Please contact the M. Mengel or the authors of the datasets applied for calibration if you plan to recalibrate or extend the model.
 
 ### Installation
 
@@ -34,7 +33,7 @@ or with conda
 
 `conda env create -f environment.yml`
 
-The model is written in python. If this is new to you, you may have a look at [anaconda python](https://www.continuum.io/downloads). The model has not been tested under Windows.
+The model is written in python. If this is new to you, you may have a look at [anaconda python](https://www.continuum.io/downloads). The code has not been tested for Windows.
 
 ### Dependencies
 
@@ -49,7 +48,7 @@ See [requirements.txt](https://github.com/matthiasmengel/sealevel/blob/master/re
 
 ### Issues and contributing
 
-Please post issues on the [issue tracker](https://github.com/matthiasmengel/sealevel/issues) or contact the author.
+Please post issues on the [issue tracker](https://github.com/matthiasmengel/sealevel/issues) or contact the author. Contributions or propositions to extend the model are most welcome.
 
 ### Versions
 

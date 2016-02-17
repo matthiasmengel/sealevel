@@ -34,7 +34,6 @@ import cPickle as pickle
 from scipy.io import loadmat
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
-#import get_calibration_data as gd; reload(gd)
 import get_gmt_data as ggd
 reload(ggd)
 import sealevel as sl
@@ -62,7 +61,6 @@ plot_these = ["thermexp"]  # ,"thermexp","gic","gis_smb","gis_sid"]
 
 
 for contrib in plot_these:
-    # def get_obs_and_calibrated(contrib):
 
     calibdata = pickle.load(
         open("../data/calibration/" + contrib + ".pkl", "rb"))
@@ -108,7 +106,6 @@ for contrib in plot_these:
         calculated_first_year_of_obs = sl_calculated[
             np.searchsorted(gmt_anom.time, plot_anomaly_time), :].mean()
 
-        # print calculated_first_year_of_obs
         obs_aligned = (obsv - obsv[plot_anomaly_time] +
                        calculated_first_year_of_obs)
 
@@ -131,4 +128,4 @@ for contrib in plot_these:
     plt.show()
 
     runname = __file__.split("/")[-1][0:-3]
-    plt.savefig("../figures/" + runname + "_" + contrib + "2.pdf")
+    plt.savefig("../figures/" + runname + "_" + contrib + ".pdf")

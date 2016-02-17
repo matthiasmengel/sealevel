@@ -12,6 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
+
 """ Code for Fig. 2 as in
     M. Mengel et al.
     Future sea-level rise constrained by observations and long-term commitment
@@ -22,15 +23,12 @@
     openly available. Request data from authors or comment out.
 """
 
-
 import os
 import sys
 import numpy as np
-# import netCDF4 as nc
 import matplotlib.pyplot as plt
 from matplotlib import cm
-# import itertools
-# from scipy.io import loadmat
+
 lib_path = os.path.abspath('../src')
 sys.path.append(lib_path)
 import get_calibration_data as gd
@@ -62,59 +60,37 @@ plt.rcParams['pdf.fonttype'] = '42'
 
 contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
+nrealizations = 10000
+realizations = np.arange(nrealizations)
 
-def project(dummynumber):
-    """ Same as in create_projections2.py, only use giss_gmt as driving temperature.
-      for one random choice of observations obs_choice.
-      and one random tuple of independent and dependent parameter.
-    """
-
-    driving_temperature = ggd.giss_temp
-
-    # print contrib_name, temp_anomaly_year
-    # use one of the observational dataset
-    obs_choice = np.random.choice(calibdata["params"].keys())
-    params = calibdata["params"][obs_choice]
-    temp_anomaly_year = params.temp_anomaly_year
-
-    if obs_choice == "box_colgan13":
-        driving_temperature += sl.gis_colgan_temperature_offset
-
-    # print np.max(driving_temperature)
-
-    # choose a random parameter set
-    tuple_choice = np.random.randint(len(params.commitment_parameter))
-    independent_param = params.commitment_parameter[tuple_choice]
-    dependent_param = params.calibrated_parameter[tuple_choice]
-    # print "tuple",independent_param,dependent_param
-
-    contributor = params.sl_contributor(independent_param, temp_anomaly_year)
-    contrib = contributor.calc_contribution(
-        driving_temperature, dependent_param)
-    # print contrib
-    return contrib
+all_contributions = {}
 
 # Monte Carlo Sampling from all the different observational datasets and
 # fitting/calibrated parametes.
-all_contributions = {}
-realizations = 10000
 for i, contrib_name in enumerate(contrib_ids):
 
     print "conribution", contrib_name
     calibdata = pickle.load(
-        open("../data/calibration/" + contrib_name + ".pkl", "rb"))
+        open(
+            "../data/calibration/" +
+            contrib_name +
+            ".pkl",
+            "rb"))
 
-    # dd = p.map_async(project,selected_numbers)
-    proj = map(project, np.arange(realizations))
-    all_contributions[contrib_name] = da.DimArray(proj,
-                                                  axes=[np.arange(realizations), ggd.giss_temp.time], dims=["realization", "time"])
+    proj = np.zeros([nrealizations,len(ggd.giss_temp.time)])
+
+    for n in realizations:
+        proj[n,:] = sl.project(ggd.giss_temp, ggd.giss_temp.time, calibdata, n)
+
+    pdata = da.DimArray(proj, axes=[realizations, ggd.giss_temp.time],
+                        dims=["runnumber","time"])
+    all_contributions[contrib_name] = pdata
 
 all_contributions = da.DimArray(all_contributions, dims=[
-                                "contribution", "realization", "time"])
-
+                                "contribution", "runnumber", "time"])
 
 obs_period = np.arange(1900, 2009)
-# plt.close("all")
+
 fig = plt.figure(2)
 plt.clf()
 ax = plt.subplot(111)
@@ -127,8 +103,6 @@ lower_bound = past_sl_anom - gd.church_past_sl_std[obs_period]
 upper_bound = past_sl_anom + gd.church_past_sl_std[obs_period]
 
 #### observed ####
-# past_sl_anom -= past_sl_anom[1990:2000].mean() #-
-# total_sl.sum(axis=0)[-10:].mean()
 ax.plot(obs_period, past_sl_anom * 1e3, lw=2, color="black", alpha=1.,
         label="observed\nChurch et al.", marker="|", markevery=10, markersize=10)
 
@@ -144,59 +118,39 @@ hay15_lower = gd.hay15_lower - \
     natural_gic_contrib[obs_period] - gd.hay15_past_sl[1986:2005].mean()
 hay15_upper = gd.hay15_upper - \
     natural_gic_contrib[obs_period] - gd.hay15_past_sl[1986:2005].mean()
-# hay15_past_sl -= hay15_lower[1986:2005].mean()
 ax.fill_between(hay15_lower.time, hay15_lower * 1e3,
                 hay15_upper * 1e3, lw=.5, color="blue", alpha=.2)
 
-# ax.plot(hay15_past_sl.time,hay15_lower*1e3,lw=2,color="blue",alpha=0.6,
-# label="observed\nHay et
-# al.",marker="x",markevery=10,markeredgewidth=2,markersize=5)
-
 #### calculated from GMT ####
-
 tslr = all_contributions.sum(axis="contribution")
 tslr -= tslr[:, 1986:2005].mean(axis="time")
 
 upper_perc = da.DimArray(np.percentile(tslr, 95, axis=0),
-                         axes=tslr.time, dims="time")  # [obs_period.searchsorted(plot_period)]
+                         axes=tslr.time, dims="time")
 lower_perc = da.DimArray(np.percentile(tslr, 5, axis=0),
-                         axes=tslr.time, dims="time")  # [obs_period.searchsorted(plot_period)]
+                         axes=tslr.time, dims="time")
 median = da.DimArray(np.percentile(tslr, 50, axis=0),
-                     axes=tslr.time, dims="time")  # [obs_period.searchsorted(plot_period)]
+                     axes=tslr.time, dims="time")
 
-# upper_perc -= median[1986:2005].mean(axis="time")
-# lower_perc -= median[1986:2005].mean(axis="time")
-# median -= median[1986:2005].mean(axis="time")
 
-# total_slr_calculated -= tslr - tslr[:,1986:2005].mean(axis="time")
-
-# for i,slr_calculated in enumerate(total_slr_calculated):
-#     lbl = "reconstructed" if i==0 else ""
 ax.plot(tslr.time, median * 1e3, lw=2, color="#c98345",
         label="reconstructed", alpha=1., )
 ax.fill_between(lower_perc.time, lower_perc * 1e3,
                 upper_perc * 1e3, lw=.5, color="#c98345", alpha=.3)
 
-# axb.plot(obs_period,gd.giss_temp[obs_period],lw=2,color="red",alpha=1.)
-# ax.text(0.05,0.8,"total", transform=ax.transAxes,fontweight='bold',)
-
-
 ax.set_xlim(obs_period[0], obs_period[-1] + 1)
 ax.set_xlabel("Time in years")
 ax.set_ylabel("Sea level in mm")
 # axb.set_ylabel("gmt")
-l1 = ax.legend(ncol=1, loc="upper left")  # ,bbox_to_anchor=(0.35,1.0))
+l1 = ax.legend(ncol=1, loc="upper left")
 l1.draw_frame(0)
 for l in l1.get_lines():
     l.set_alpha(1)
 
-# for ax in axs:
-#   ax.set_ylim(ax.get_ylim())
 plt.draw()
 plt.show()
 
 runname = __file__.split("/")[-1][0:-3]
-figname = "../figures/" + runname + "2.png"
-figname = "../figures/" + runname + "2.pdf"
+figname = "../figures/" + runname + ".pdf"
 
 plt.savefig(figname)

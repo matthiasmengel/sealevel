@@ -61,7 +61,6 @@ plt.rcParams['figure.figsize'] = 8, 10
 plt.rcParams['figure.facecolor'] = "white"
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['pdf.fonttype'] = '42'
-# plt.rcParams['font.family'] = 'Open Sans'
 
 
 contrib_ids = ["thermexp", "gic", "gis_sid", "gis_smb", "ant_sid", "ant_smb"]
@@ -86,7 +85,7 @@ plt.subplots_adjust(left=None, bottom=0.06, right=None, top=0.97,
 plotlb = "abcdef"
 axs = []
 for p, contrib in enumerate(contrib_ids):
-    # def get_obs_and_calibrated(contrib):
+
     print p, contrib
     ax = plt.subplot(3, 2, p + 1)
     axs.append(ax)
@@ -140,12 +139,6 @@ for p, contrib in enumerate(contrib_ids):
             ax.plot(gmt_anom.time, sl_calculated[
                     :, j] * 1.e3 + offset, color=cols[i], lw=2, alpha=0.2)
 
-        # plot_anomaly_time = np.maximum(params.cal_period[0],obsv.time[0])
-        # calculated_first_year_of_obs = sl_calculated[
-        #     np.searchsorted(gmt_anom.time,plot_anomaly_time),:].mean()
-        # # print calculated_first_year_of_obs
-        # obs_aligned = (obsv - obsv[plot_anomaly_time] +
-        #     calculated_first_year_of_obs)
         if contrib == "ant_smb":
             continue
 
@@ -156,12 +149,11 @@ for p, contrib in enumerate(contrib_ids):
 
         if obs == "harig_simons15":
             # only starts in 2003, so 1986-2005 mean not available,
-            # use that of observation before (dirty!)
+            # use that of observation before
             obs_aligned = (obsv - obsv[2003] +
                            sl_calculated[np.searchsorted(gmt_anom.time, 2003), :].mean())
         else:
             obs_aligned = obsv - obsv[plot_anomaly_time].mean()
-        #     calculated_first_year_of_obs)
 
         lbl = obslbl[obs] if contrib != "thermexp" else ""
         ax.plot(obsv.time, obs_aligned * 1.e3 + offset, label=lbl, lw=1,
@@ -176,8 +168,7 @@ for p, contrib in enumerate(contrib_ids):
             fontdict={'family': 'sans-serif', 'weight': 'bold', "size": 16})
     ax.text(0.05, 0.8, labels[contrib], transform=ax.transAxes,
             fontdict={'family': 'sans-serif', 'weight': 'bold'})
-    # if contrib == "thermexp":
-    #     ax.set_ylim(top=0.45)
+
     if "ant" not in contrib:
         ax.set_ylim(ax.get_ylim()[0] * 0.8, ax.get_ylim()[1] * 0.8)
     if "ant_smb" == contrib:
@@ -199,6 +190,4 @@ plt.draw()
 plt.show()
 
 runname = __file__.split("/")[-1][0:-3]
-# plt.savefig("../figures/"+runname+"2.svg")
-# plt.savefig("../figures/"+runname+"2.png")
-plt.savefig("../figures/" + runname + "5.pdf")
+plt.savefig("../figures/" + runname + ".pdf")

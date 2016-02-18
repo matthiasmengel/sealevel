@@ -77,11 +77,6 @@ for dat in gicequi.gic_equi_radic:
     i += 1
 
 l1 = ax1.legend(loc="lower right")
-# for l in l1.get_lines():
-#     l.set_color((1,1,1,1))
-#     print l.get_markerfacecolor()
-#     l.set_markeredgecolor((1,1,1,1))
-
 
 l1.draw_frame(0)
 for ax in [ax1]:

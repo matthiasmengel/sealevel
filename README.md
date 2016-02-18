@@ -7,6 +7,7 @@ If you make use of this code, please cite
 Future sea level rise constrained by observations and long-term commitment
 M. Mengel et al. PNAS 2016
 ```
+Find the paper here: [http://dx.doi.org/10.1073/pnas.1500515113](http://dx.doi.org/10.1073/pnas.1500515113).
 
 This repository contains the code to produce the results as presented in the paper.
 There are two main parts: The calibration of the model and using the model for projections.
@@ -52,7 +53,7 @@ Please post issues on the [issue tracker](https://github.com/matthiasmengel/seal
 
 ### Versions
 
-v 1.0: code as used for the Mengel et al., PNAS 2016.
+v 1.0.0: code as used for the Mengel et al., PNAS 2016, [http://dx.doi.org/10.1073/pnas.1500515113](http://dx.doi.org/10.1073/pnas.1500515113).
 
 ### License
 

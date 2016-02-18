@@ -127,7 +127,6 @@ ax.text(0.05, 0.75, "observations", transform=ax.transAxes,
 ax2.text(0.05, 0.75, "anthropogenic fraction",
          transform=ax2.transAxes, fontweight='bold', fontsize=16)
 
-plt.savefig("../figures/" + runname + ".png")
 plt.savefig("../figures/" + runname + ".pdf")
 
 plt.draw()

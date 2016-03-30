@@ -78,7 +78,8 @@ for scen in ["RCP3PD", "RCP45", "RCP85"]:
         proj = np.zeros([len(proj_period), nrealizations])
 
         for n in realizations:
-            proj[:, n] = sl.project(gmt, proj_period, calibdata, n)
+            slr,driving_temp = sl.project(gmt, proj_period, calibdata, n)
+            proj[:, n] = slr
 
         pdata = da.DimArray(proj, axes=[proj_period, realizations],
                             dims=["time", "runnumber"])

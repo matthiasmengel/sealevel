@@ -96,13 +96,14 @@ for scen in ["rcp26",'rcp45','rcp85']:#,"RCP45","RCP85"]:
 
         print "conribution", contrib_name
         calibdata = pickle.load(open(calibdatadir+contrib_name+".pkl","rb"))
-        proj = np.zeros([len(proj_period),nrealizations])
+        pdata = da.DimArray(None, axes=[proj_period,realizations],
+                         dims=["time","runnumber"])
 
         for n in realizations:
-         proj[:,n] = sl.project(gmt,proj_period,calibdata,n+1)
 
-        pdata = da.DimArray(proj, axes=[proj_period,realizations],
-                         dims=["time","runnumber"])
+             slr,temp = sl.project(gmt,proj_period,calibdata,n+1)
+             pdata[:,n] = slr
+
         projection_data[nd[scen]][contrib_name] = pdata
 
 

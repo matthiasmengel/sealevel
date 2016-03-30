@@ -110,4 +110,4 @@ def project(gmt, proj_period, calibdata, sample_number):
     contrib = contributor.calc_contribution(
         driving_temperature, dependent_param)
     # print contrib
-    return contrib
+    return [contrib, driving_temperature]

@@ -101,7 +101,7 @@ for scen in ["rcp26",'rcp45','rcp85']:#,"RCP45","RCP85"]:
 
         for n in realizations:
 
-             slr,temp = sl.project(gmt,proj_period,calibdata,n+1)
+             slr,gmt_i = sl.project(gmt,proj_period,calibdata,n+1)
              pdata[:,n] = slr
 
         projection_data[nd[scen]][contrib_name] = pdata

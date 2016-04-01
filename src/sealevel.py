@@ -89,6 +89,7 @@ def project(gmt, proj_period, calibdata, sample_number):
         driving_temperature = gmt[proj_period, gmt_choice]
     except IndexError:
         # this is the case if single gmt is supplied
+        gmt_choice = 0
         driving_temperature = gmt[proj_period]
 
     # print contrib_name, temp_anomaly_year
@@ -110,4 +111,4 @@ def project(gmt, proj_period, calibdata, sample_number):
     contrib = contributor.calc_contribution(
         driving_temperature, dependent_param)
     # print contrib
-    return [contrib, driving_temperature]
+    return [contrib, gmt_choice]

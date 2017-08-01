@@ -32,7 +32,9 @@ reload(gcd)
 import get_gmt_data as ggd
 reload(ggd)
 
-inputdatadir = os.path.join("../data/input/")
+basedir = os.path.dirname(
+    os.path.dirname(os.path.realpath(__file__)))
+inputdatadir = os.path.join(basedir, "data/input/")
 
 ######## Glacier equilibrium estimates ########
 
@@ -97,5 +99,5 @@ for gic_equi in gic_equi_radic:
     gic_equi_coeffs.append(get_equi_coefficients(gic_temp_radic, gic_equi))
 
 gic_equi_coeffs = np.array(gic_equi_coeffs)
-np.savetxt("../data/glacier_equi/glacier_equi_coefficients.csv", gic_equi_coeffs,
-           fmt='%.8f', header="a        b")
+np.savetxt(os.path.join(basedir, "data/glacier_equi/glacier_equi_coefficients.csv"),
+           gic_equi_coeffs, fmt='%.8f', header="a        b")

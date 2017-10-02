@@ -23,6 +23,14 @@ scenarios = ["RCP3PD", "RCP45", "RCP85"]
 contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
+calibrate_these = [
+    "thermexp",
+    "gic",
+    "gis_smb",
+    "gis_sid",
+    "ant_smb",
+    "ant_sid"]
+
 # TODO: finde a better name for classname
 classname = {
     "gic": "glaciers_and_icecaps",

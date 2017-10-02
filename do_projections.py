@@ -12,11 +12,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
+""" Minimal way to do sea level projectoons using the src.sealevel.project
+    function.
+"""
 
 import os
 import numpy as np
 import cPickle as pickle
 import settings
+import dimarray as da
 reload(settings)
 import src.sealevel as sl
 reload(sl)
@@ -42,17 +46,19 @@ for scen in settings.scenarios:
                  os.path.join(settings.calibfolder, contrib_name+".pkl"),
                     "rb" ) )
 
-        proj = np.zeros([len(proj_period), nrealizations])
+        proj = np.zeros([len(settings.proj_period), settings.nrealizations])
 
         for n in realizations:
-            slr,driving_temp = sl.project(gmt, proj_period, calibdata, n)
+            slr, gmt_n, obs_choice, ind_param, dep_param = sl.project(
+                gmt, settings.proj_period, calibdata, n)
             proj[:, n] = slr
 
-        pdata = da.DimArray(proj, axes=[proj_period, realizations],
+        pdata = da.DimArray(proj, axes=[settings.proj_period, realizations],
                             dims=["time", "runnumber"])
         projection_data[scen][contrib_name] = pdata
 
 fname = os.path.join(settings.projected_slr_folder,
-                     "projected_slr_"+str(nrealizations)+"samples.pkl"
+                     "projected_slr_"+str(settings.nrealizations)+"samples.pkl")
+
 print "save to pickle."
 pickle.dump(projection_data, open(fname, "wb"), protocol=2)

@@ -12,41 +12,31 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
-
-import calibration
-reload(calibration)
-import contributor_functions as cf
-reload(cf)
-import get_calibration_data as gcd
-reload(gcd)
-import calib_settings as cs
-reload(cs)
-import get_gmt_data as ggd
-reload(ggd)
-import sealevel as sl
-reload(sl)
+import os
 import numpy as np
-import collections
-import dimarray as da
 import cPickle as pickle
 
-contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
+import settings
+reload(settings)
+import src.calibration as calibration
+reload(calibration)
+import src.contributor_functions as cf
+reload(cf)
+import src.get_calibration_data as gcd
+reload(gcd)
+import src.calib_settings as cs
+reload(cs)
+import src.get_gmt_data as ggd
+reload(ggd)
+import src.sealevel as sl
+reload(sl)
 
-calibrate_these = [
-    "thermexp",
-    "gic",
-    "gis_smb",
-    "gis_sid",
-    "ant_smb",
-    "ant_sid"]
 
 gmt = ggd.giss_temp
 
-calibdatadir = "../data/calibration/"
-
 ##### Thermal expansion #####
 
-if "thermexp" in calibrate_these:
+if "thermexp" in settings.calibrate_these:
 
     # This is the basis of Fig 10.34 of AR4, and in (c) they have pretty much levelled off by year 3000
     # Bern2D-CC 0.488; CLIMBER-2 0.458; CLIMBER-3a 0.200; MIT 0.214; MoBidiC
@@ -68,12 +58,12 @@ if "thermexp" in calibrate_these:
         calib.calibrate()
         te_params[obs_te] = calib
 
-    outfile = calibdatadir + "thermexp.pkl"
+    outfile = os.path.join(settings.calibfolder, "thermexp.pkl")
     pickle.dump({"params": te_params}, open(outfile, "wb"), protocol=2)
 
 ##### Glaciers and ice caps #####
 
-if "gic" in calibrate_these:
+if "gic" in settings.calibrate_these:
 
     sl_contributor = cf.glaciers_and_icecaps
     gic_modelno = np.arange(len(sl.gic_equi_functions))
@@ -93,13 +83,13 @@ if "gic" in calibrate_these:
         calib.calibrate()
         gic_anth_params[obs_gic] = calib
 
-    outfile = calibdatadir + "gic.pkl"
+    outfile = os.path.join(settings.calibfolder, "gic.pkl")
     pickle.dump({"params": gic_anth_params}, open(outfile, "wb"), protocol=2)
 
 
 ##### Greenland SMB #####
 
-if "gis_smb" in calibrate_these:
+if "gis_smb" in settings.calibrate_these:
 
     sl_contributor = cf.surfacemassbalance_gis
     # levermann 13 coefficients.
@@ -123,13 +113,13 @@ if "gis_smb" in calibrate_these:
         calib.calibrate()
         gis_smb_params[obs_gis] = calib
 
-    outfile = calibdatadir + "gis_smb.pkl"
+    outfile = os.path.join(settings.calibfolder, "gis_smb.pkl")
     pickle.dump({"params": gis_smb_params}, open(outfile, "wb"), protocol=2)
 
 
 ##### Greenland solid ice discharge #####
 
-if "gis_sid" in calibrate_these:
+if "gis_sid" in settings.calibrate_these:
 
     sl_contributor = cf.solid_ice_discharge_gis
     # levermann 13 coefficients.
@@ -153,14 +143,14 @@ if "gis_sid" in calibrate_these:
         calib.calibrate()
         gis_sid_params[obs_gis] = calib
 
-    outfile = calibdatadir + "gis_sid.pkl"
+    outfile = os.path.join(settings.calibfolder, "gis_sid.pkl")
     # only params will be used for projections
     pickle.dump({"params": gis_sid_params}, open(outfile, "wb"), protocol=2)
 
 
 ##### Antarctica solid ice discharge #####
 
-if "ant_sid" in calibrate_these:
+if "ant_sid" in settings.calibrate_these:
 
     sl_contributor = cf.solid_ice_discharge_ais
     # Levermann et al. PNAS (2013) coefficients.
@@ -180,7 +170,7 @@ if "ant_sid" in calibrate_these:
         calib.calibrate()
         ant_sid_params[obs_ant_sid] = calib
 
-    outfile = calibdatadir + "ant_sid.pkl"
+    outfile = os.path.join(settings.calibfolder, "ant_sid.pkl")
     pickle.dump({"params": ant_sid_params}, open(outfile, "wb"), protocol=2)
 
 
@@ -189,7 +179,7 @@ if "ant_sid" in calibrate_these:
 """ Antarcita SMB, we only pass the precipitation scaling parameters
  for projections, no real calibration. """
 
-if "ant_smb" in calibrate_these:
+if "ant_smb" in settings.calibrate_these:
 
     sl_contributor = cf.surfacemassbalance_ais
     # inferred from Ligtenberg 13, in m/yr/K
@@ -204,5 +194,5 @@ if "ant_smb" in calibrate_these:
 
     ais_smb_params = {"ligtenberg13": calib}
 
-    outfile = calibdatadir + "ant_smb.pkl"
+    outfile = os.path.join(settings.calibfolder, "ant_smb.pkl")
     pickle.dump({"params": ais_smb_params}, open(outfile, "wb"), protocol=2)

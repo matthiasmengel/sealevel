@@ -1,9 +1,8 @@
 figures/
 *pyc
-.DS_store
-*data/
-.ipynb_checkpoints/
-.ipynb
-experiments/
+data/
 data/input
 notebooks/
+.ipynb_checkpoints/
+helper/
+TODO.txt

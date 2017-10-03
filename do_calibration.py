@@ -191,8 +191,10 @@ if "ant_smb" in settings.calibrate_these:
     # inferred from Ligtenberg 13, in m/yr/K
     ais_prec_scaling = np.arange(2., 6.5, .5) * 1e-3
 
-    # gis_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.ant_sid_observations.keys(),ais_prec_scaling],
-    #     names=["observation","independent_param"]), columns=["dependent_param"])
+    ais_smb_params = pd.DataFrame(index=pd.MultiIndex.from_product([["ligtenberg13"],ais_prec_scaling],
+        names=["observation","independent_param"]), columns=["dependent_param"])
+
+    ais_smb_params.to_csv(os.path.join(settings.calibfolder, "ant_smb.csv"))
 
     # observation_period = "dummy"
     # temp_anomaly_year = "dummy"

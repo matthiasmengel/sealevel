@@ -27,9 +27,9 @@ calibrate_these = [
     # "thermexp",
     # "gic",
     # "gis_smb",
-    "gis_sid",
+    # "gis_sid",
     "ant_smb",
-    "ant_sid"
+    # "ant_sid"
     ]
 
 proj_period = np.arange(1900, 2101, 1)

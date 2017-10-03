@@ -274,3 +274,7 @@ class solid_ice_discharge_ais(object):
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
 
         return discharge
+
+contributor_functions = {"thermexp":thermal_expansion, "gic":glaciers_and_icecaps,
+                         "gis_smb":surfacemassbalance_gis, "gis_sid":solid_ice_discharge_gis,
+                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais}

@@ -28,6 +28,7 @@ gis_colgan_temperature_offset = 0.5
 
 ######## equilibrium sea level functions for mountain glaciers ########
 
+# TODO: move to contributor_functions.py
 def gic_equi_func(equi_temp, a, b):
     """ assume exponential functional form. This is justified, because
     1) the function saturates for high temperatures.
@@ -56,9 +57,10 @@ for coeffs in gic_equi_coeffs:
 
 
 
-######## project function for Monte-Carlo sampling ########
+######## sea level projection using for Monte-Carlo sampling ########
 
-def project(gmt, proj_period, calibdata, sample_number):
+def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
+            sample_number):
     """
     Monte Carlo sampling for slr contribution
     for a single global mean temperature (gmt) timeseries or
@@ -73,6 +75,9 @@ def project(gmt, proj_period, calibdata, sample_number):
     gmt : single or ensemble of gmt timeseries
     proj_period : time period for which slr projection is done
     calibdata : calibration data for the several observations per component
+    temp_anomaly_year: year in which global mean temperature passes zero,
+                       depending on observation.
+    sl_contributor: function to calculate transient sea level rise.
     sample_number : number for seed to be created to make sampling reproducible
 
     Returns
@@ -94,20 +99,20 @@ def project(gmt, proj_period, calibdata, sample_number):
 
     # print contrib_name, temp_anomaly_year
     # use one of the observational dataset
-    obs_choice = np.random.choice(calibdata["params"].keys())
-    params = calibdata["params"][obs_choice]
-    temp_anomaly_year = params.temp_anomaly_year
+    obs_choice = np.random.choice(calibdata.index.unique())
+    params = calibdata.loc[obs_choice]
+    # temp_anomaly_year = params.temp_anomaly_year
 
     if obs_choice == "box_colgan13":
         driving_temperature += gis_colgan_temperature_offset
 
     # choose a random parameter set
-    tuple_choice = np.random.randint(len(params.commitment_parameter))
-    independent_param = params.commitment_parameter[tuple_choice]
-    dependent_param = params.calibrated_parameter[tuple_choice]
+    tuple_choice = np.random.randint(len(params))
+    independent_param = params["independent_param"][tuple_choice]
+    dependent_param = params["dependent_param"][tuple_choice]
     # print "tuple",independent_param,dependent_param
 
-    contributor = params.sl_contributor(independent_param, temp_anomaly_year)
+    contributor = sl_contributor(independent_param, temp_anomaly_year[obs_choice])
     contrib = contributor.calc_contribution(
         driving_temperature, dependent_param)
     # print contrib

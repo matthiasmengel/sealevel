@@ -45,10 +45,8 @@ if "thermexp" in settings.calibrate_these:
     alpha_te = np.array([0.488, 0.458, 0.200, 0.214, 0.626, 0.386])
     sl_contributor = cf.thermal_expansion
 
-    # te_params = {}
     te_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.thermexp_observations.keys(),alpha_te],
         names=["observation","independent_param"]), columns=["dependent_param"])
-    # te_condensed = np.array([])
 
     for obs_te in cs.thermexp_observations:
         print obs_te
@@ -61,11 +59,8 @@ if "thermexp" in settings.calibrate_these:
         ip,dp = calib.calibrate()
         # ip is same as alpha_te. TODO: remove
         te_params.loc[obs_te,:]= dp
-        # te_params.loc[obs_te,:]["dependent_param"] = dp
 
     te_params.to_csv(os.path.join(settings.calibfolder, "thermexp.csv"))
-    # outfile = os.path.join(settings.calibfolder, "thermexp.pkl")
-    # pickle.dump({"params": te_params}, open(outfile, "wb"), protocol=2)
 
 ##### Glaciers and ice caps #####
 
@@ -74,7 +69,9 @@ if "gic" in settings.calibrate_these:
     sl_contributor = cf.glaciers_and_icecaps
     gic_modelno = np.arange(len(sl.gic_equi_functions))
 
-    gic_anth_params = {}
+    # gic_anth_params = {}
+    gic_anth_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gic_observations.keys(),gic_modelno],
+        names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gic in enumerate(cs.gic_observations):
         print "####", obs_gic
@@ -86,12 +83,10 @@ if "gic" in settings.calibrate_these:
                       gcd.anthropogenic_frac).dropna().cumsum()
         calib = calibration.Calibration(gmt, "gic", anthro_gic, gic_modelno,
                                         sl_contributor, observation_period, temp_anomaly_year)
-        calib.calibrate()
-        gic_anth_params[obs_gic] = calib
+        ip,dp = calib.calibrate()
+        gic_anth_params.loc[obs_gic,:]= dp
 
-    outfile = os.path.join(settings.calibfolder, "gic.pkl")
-    pickle.dump({"params": gic_anth_params}, open(outfile, "wb"), protocol=2)
-
+    gic_anth_params.to_csv(os.path.join(settings.calibfolder, "gic.csv"))
 
 ##### Greenland SMB #####
 
@@ -100,7 +95,9 @@ if "gis_smb" in settings.calibrate_these:
     sl_contributor = cf.surfacemassbalance_gis
     # levermann 13 coefficients.
     gis_smb_coeff = np.arange(0.05, 0.22, 0.02)
-    gis_smb_params = {}
+
+    gis_smb_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gis_smb_observations.keys(),gis_smb_coeff],
+        names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gis in enumerate(cs.gis_smb_observations):
 
@@ -116,11 +113,10 @@ if "gis_smb" in settings.calibrate_these:
         sl_observation = cs.gis_smb_observations[obs_gis]
         calib = calibration.Calibration(gmt_gis, "gis_smb", sl_observation,
                                         gis_smb_coeff, sl_contributor, observation_period, temp_anomaly_year)
-        calib.calibrate()
-        gis_smb_params[obs_gis] = calib
+        ip,dp = calib.calibrate()
+        gis_smb_params.loc[obs_gis,:]= dp
 
-    outfile = os.path.join(settings.calibfolder, "gis_smb.pkl")
-    pickle.dump({"params": gis_smb_params}, open(outfile, "wb"), protocol=2)
+    gis_smb_params.to_csv(os.path.join(settings.calibfolder, "gis_smb.csv"))
 
 
 ##### Greenland solid ice discharge #####
@@ -130,7 +126,10 @@ if "gis_sid" in settings.calibrate_these:
     sl_contributor = cf.solid_ice_discharge_gis
     # levermann 13 coefficients.
     gis_sid_coeff = np.arange(-0.9, -0.45, 0.05)  # alpha
-    gis_sid_params = {}
+    # gis_sid_params = {}
+
+    gis_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gis_sid_observations.keys(),gis_sid_coeff],
+        names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gis in enumerate(cs.gis_sid_observations):
 
@@ -146,12 +145,10 @@ if "gis_sid" in settings.calibrate_these:
         sl_observation = cs.gis_sid_observations[obs_gis]
         calib = calibration.Calibration(gmt_gis, "gis_sid", sl_observation,
                                         gis_sid_coeff, sl_contributor, observation_period, temp_anomaly_year)
-        calib.calibrate()
-        gis_sid_params[obs_gis] = calib
+        ip,dp = calib.calibrate()
+        gis_sid_params.loc[obs_gis,:]= dp
 
-    outfile = os.path.join(settings.calibfolder, "gis_sid.pkl")
-    # only params will be used for projections
-    pickle.dump({"params": gis_sid_params}, open(outfile, "wb"), protocol=2)
+    gis_sid_params.to_csv(os.path.join(settings.calibfolder, "gis_sid.csv"))
 
 
 ##### Antarctica solid ice discharge #####
@@ -161,7 +158,9 @@ if "ant_sid" in settings.calibrate_these:
     sl_contributor = cf.solid_ice_discharge_ais
     # Levermann et al. PNAS (2013) coefficients.
     ant_sid_coeff = np.arange(1.0, 1.55, 0.05)
-    ant_sid_params = {}
+
+    ant_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.ant_sid_observations.keys(),ant_sid_coeff],
+        names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_ant_sid in enumerate(cs.ant_sid_observations):
 
@@ -173,11 +172,10 @@ if "ant_sid" in settings.calibrate_these:
         sl_observation = cs.ant_sid_observations[obs_ant_sid]
         calib = calibration.Calibration(gmt, obs_ant_sid, sl_observation,
                                         ant_sid_coeff, sl_contributor, observation_period, temp_anomaly_year)
-        calib.calibrate()
-        ant_sid_params[obs_ant_sid] = calib
+        ip,dp = calib.calibrate()
+        ant_sid_params.loc[obs_ant_sid,:]= dp
 
-    outfile = os.path.join(settings.calibfolder, "ant_sid.pkl")
-    pickle.dump({"params": ant_sid_params}, open(outfile, "wb"), protocol=2)
+    ant_sid_params.to_csv(os.path.join(settings.calibfolder, "ant_sid.csv"))
 
 
 ##### Antarctica SMB #####
@@ -187,18 +185,22 @@ if "ant_sid" in settings.calibrate_these:
 
 if "ant_smb" in settings.calibrate_these:
 
+    # TODO: update later or remove. We do not really do a calibration here.
+
     sl_contributor = cf.surfacemassbalance_ais
     # inferred from Ligtenberg 13, in m/yr/K
     ais_prec_scaling = np.arange(2., 6.5, .5) * 1e-3
-    ais_smb_params = {}
 
-    observation_period = "dummy"
-    temp_anomaly_year = "dummy"
-    sl_observation = "dummy"
-    calib = calibration.Calibration(gmt, "ant_smb", sl_observation,
-                                    ais_prec_scaling, sl_contributor, observation_period, temp_anomaly_year)
+    # gis_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.ant_sid_observations.keys(),ais_prec_scaling],
+    #     names=["observation","independent_param"]), columns=["dependent_param"])
 
-    ais_smb_params = {"ligtenberg13": calib}
+    # observation_period = "dummy"
+    # temp_anomaly_year = "dummy"
+    # sl_observation = "dummy"
+    # calib = calibration.Calibration(gmt, "ant_smb", sl_observation,
+    #                                 ais_prec_scaling, sl_contributor, observation_period, temp_anomaly_year)
 
-    outfile = os.path.join(settings.calibfolder, "ant_smb.pkl")
-    pickle.dump({"params": ais_smb_params}, open(outfile, "wb"), protocol=2)
+    # ais_smb_params = {"ligtenberg13": calib}
+
+    # outfile = os.path.join(settings.calibfolder, "ant_smb.pkl")
+    # pickle.dump({"params": ais_smb_params}, open(outfile, "wb"), protocol=2)

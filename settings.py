@@ -24,12 +24,12 @@ contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
 calibrate_these = [
-    "thermexp",
+    # "thermexp",
     # "gic",
     # "gis_smb",
-    # "gis_sid",
-    # "ant_smb",
-    # "ant_sid"
+    "gis_sid",
+    "ant_smb",
+    "ant_sid"
     ]
 
 proj_period = np.arange(1900, 2101, 1)

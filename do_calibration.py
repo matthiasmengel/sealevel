@@ -15,6 +15,7 @@
 import os
 import numpy as np
 import cPickle as pickle
+import pandas as pd
 
 import settings
 reload(settings)
@@ -44,7 +45,9 @@ if "thermexp" in settings.calibrate_these:
     alpha_te = np.array([0.488, 0.458, 0.200, 0.214, 0.626, 0.386])
     sl_contributor = cf.thermal_expansion
 
-    te_params = {}
+    # te_params = {}
+    te_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.thermexp_observations.keys(),alpha_te],
+        names=["observation","independent_param"]), columns=["dependent_param"])
     # te_condensed = np.array([])
 
     for obs_te in cs.thermexp_observations:
@@ -55,11 +58,14 @@ if "thermexp" in settings.calibrate_these:
         sl_observation = cs.thermexp_observations[obs_te]
         calib = calibration.Calibration(gmt, "thermexp",
                                         sl_observation, alpha_te, sl_contributor, observation_period, temp_anomaly_year)
-        calib.calibrate()
-        te_params[obs_te] = calib
+        ip,dp = calib.calibrate()
+        # ip is same as alpha_te. TODO: remove
+        te_params.loc[obs_te,:]= dp
+        # te_params.loc[obs_te,:]["dependent_param"] = dp
 
-    outfile = os.path.join(settings.calibfolder, "thermexp.pkl")
-    pickle.dump({"params": te_params}, open(outfile, "wb"), protocol=2)
+    te_params.to_csv(os.path.join(settings.calibfolder, "thermexp.csv"))
+    # outfile = os.path.join(settings.calibfolder, "thermexp.pkl")
+    # pickle.dump({"params": te_params}, open(outfile, "wb"), protocol=2)
 
 ##### Glaciers and ice caps #####
 

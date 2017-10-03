@@ -25,21 +25,12 @@ project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
 calibrate_these = [
     "thermexp",
-    "gic",
-    "gis_smb",
-    "gis_sid",
-    "ant_smb",
-    "ant_sid"]
-
-# TODO: finde a better name for classname
-classname = {
-    "gic": "glaciers_and_icecaps",
-    "thermexp": "thermal_expansion",
-    "gis": "surfacemassbalance_gis",
-    "gis_sid": "solid_ice_discharge_gis",
-    "gis_smb": "surfacemassbalance_gis",
-    "ant_sid": "solid_ice_discharge_ais",
-    "ant_smb": "surfacemassbalance_ais"}
+    # "gic",
+    # "gis_smb",
+    # "gis_sid",
+    # "ant_smb",
+    # "ant_sid"
+    ]
 
 proj_period = np.arange(1900, 2101, 1)
 

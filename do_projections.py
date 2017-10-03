@@ -68,8 +68,11 @@ for scen in settings.scenarios:
                             dims=["time", "runnumber"])
         projection_data[scen][contrib_name] = pdata
 
-fname = os.path.join(settings.projected_slr_folder,
-                     "projected_slr_"+str(settings.nrealizations)+"samples.pkl")
+        fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
+        da.Dataset(projection_data[scen]).write_nc(os.path.join(
+            settings.projected_slr_folder,fname))
+# fname = os.path.join(settings.projected_slr_folder,
+#                      "projected_slr_"+str(settings.nrealizations)+"samples.pkl")
 
-print "save to pickle."
-pickle.dump(projection_data, open(fname, "wb"), protocol=2)
+# print "save to pickle."
+# pickle.dump(projection_data, open(fname, "wb"), protocol=2)

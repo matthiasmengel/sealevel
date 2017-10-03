@@ -35,5 +35,5 @@ calibrate_these = [
 proj_period = np.arange(1900, 2101, 1)
 
 # the number of monte carlo samples, 10000 used in PNAS paper
-nrealizations = 100
+nrealizations = 10000
 

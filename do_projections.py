@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
-""" Minimal way to do sea level projectoons using the src.sealevel.project
+""" Minimal way to do sea level projectoons using the src.projection.project
     function.
 """
 
@@ -23,8 +23,8 @@ import settings
 import dimarray as da
 import pandas as pd
 reload(settings)
-import src.sealevel as sl
-reload(sl)
+import src.projection as pr
+reload(pr)
 import src.get_magicc_gmt_data as mag
 reload(mag)
 import src.contributor_functions as cf
@@ -52,14 +52,11 @@ for scen in settings.scenarios:
 
         temp_anomaly_year = cs.temp_anomaly_year[contrib_name]
         sl_contributor = cf.contributor_functions[contrib_name]
-        # calibdata = pickle.load( open(
-        #          os.path.join(settings.calibfolder, contrib_name+".pkl"),
-        #             "rb" ) )
 
         proj = np.zeros([len(settings.proj_period), settings.nrealizations])
 
         for n in realizations:
-            slr, gmt_n, obs_choice, ind_param, dep_param = sl.project(
+            slr, gmt_n, obs_choice, ind_param, dep_param = pr.project(
                 gmt, settings.proj_period, calibdata, temp_anomaly_year,
                 sl_contributor, n)
             proj[:, n] = slr
@@ -71,8 +68,3 @@ for scen in settings.scenarios:
         fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
         da.Dataset(projection_data[scen]).write_nc(os.path.join(
             settings.projected_slr_folder,fname))
-# fname = os.path.join(settings.projected_slr_folder,
-#                      "projected_slr_"+str(settings.nrealizations)+"samples.pkl")
-
-# print "save to pickle."
-# pickle.dump(projection_data, open(fname, "wb"), protocol=2)

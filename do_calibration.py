@@ -29,7 +29,7 @@ import src.calib_settings as cs
 reload(cs)
 import src.get_gmt_data as ggd
 reload(ggd)
-import src.sealevel as sl
+import src.projection as sl
 reload(sl)
 
 
@@ -67,7 +67,7 @@ if "thermexp" in settings.calibrate_these:
 if "gic" in settings.calibrate_these:
 
     sl_contributor = cf.glaciers_and_icecaps
-    gic_modelno = np.arange(len(sl.gic_equi_functions))
+    gic_modelno = np.arange(len(cf.gic_equi_functions))
 
     # gic_anth_params = {}
     gic_anth_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gic_observations.keys(),gic_modelno],

@@ -26,37 +26,6 @@ inputdatadir = os.path.join(project_dir, "data/")
 gis_colgan_temperature_offset = 0.5
 
 
-######## equilibrium sea level functions for mountain glaciers ########
-
-# TODO: move to contributor_functions.py
-def gic_equi_func(equi_temp, a, b):
-    """ assume exponential functional form. This is justified, because
-    1) the function saturates for high temperatures.
-    2) the function passes zero for zero temperature, as wanted for
-       anthropogenic glacier contribution.
-    """
-
-    return a * (1 - np.exp(-1 * b * equi_temp))
-
-
-def func_creator(a, b):
-
-    def func(equi_temp):
-        """ same as gic_equi_func with explicit values for a and b as set by curve_fit. """
-        return a * (1 - np.exp(-1 * b * equi_temp))
-
-    return func
-
-
-gic_equi_coeffs = np.loadtxt(inputdatadir +
-                             "glacier_equi/glacier_equi_coefficients.csv")
-gic_equi_functions = []
-for coeffs in gic_equi_coeffs:
-    # print coeffs
-    gic_equi_functions.append(func_creator(*coeffs))
-
-
-
 ######## sea level projection using for Monte-Carlo sampling ########
 
 def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,

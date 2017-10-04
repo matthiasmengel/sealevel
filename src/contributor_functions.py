@@ -21,15 +21,16 @@
 import os
 import numpy as np
 import dimarray as da
-import sealevel as sl
-reload(sl)
+# import sealevel as sl
+# reload(sl)
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-inputdatadir = os.path.join(project_dir, "inputdata/")
+inputdatadir = os.path.join(project_dir, "data")
 
 dtime = 1
 area_ocean = 3.61132e14  # % m^2
 area_antarctica = 0.14e14  # m^2
+
 
 
 ################################################
@@ -70,6 +71,35 @@ class thermal_expansion(object):
 
 ################################################
 
+## equilibrium sea level functions for mountain glaciers
+
+def gic_equi_func(equi_temp, a, b):
+    """ assume exponential functional form. This is justified, because
+    1) the function saturates for high temperatures.
+    2) the function passes zero for zero temperature, as wanted for
+       anthropogenic glacier contribution.
+    """
+
+    return a * (1 - np.exp(-1 * b * equi_temp))
+
+
+def func_creator(a, b):
+
+    def func(equi_temp):
+        """ same as gic_equi_func with explicit values for a and b as set by curve_fit. """
+        return a * (1 - np.exp(-1 * b * equi_temp))
+
+    return func
+
+
+gic_equi_coeffs = np.loadtxt(os.path.join(inputdatadir,"glacier_equi",
+                             "glacier_equi_coefficients.csv"))
+gic_equi_functions = []
+for coeffs in gic_equi_coeffs:
+    # print coeffs
+    gic_equi_functions.append(func_creator(*coeffs))
+
+
 class glaciers_and_icecaps(object):
 
     """ Glaciers and ice caps equilibrium sea level response and transient response.
@@ -86,7 +116,7 @@ class glaciers_and_icecaps(object):
         """ glacier equilbrium response via custom functions, see
             M. Mengel et al., PNAS (2016), equation in supplementary material. """
 
-        return sl.gic_equi_functions[self.modelno](delta_temp)
+        return gic_equi_functions[self.modelno](delta_temp)
 
     def calc_contribution(self, delta_gmt, tau):
         """ transient response, see equ. 1 in

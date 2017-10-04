@@ -21,15 +21,16 @@ projected_slr_folder = "data/projection"
 scenarios = ["RCP3PD", "RCP45", "RCP85"]
 
 contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
+
 project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
 calibrate_these = [
-    # "thermexp",
-    # "gic",
-    # "gis_smb",
-    # "gis_sid",
+    "thermexp",
+    "gic",
+    "gis_smb",
+    "gis_sid",
     "ant_smb",
-    # "ant_sid"
+    "ant_sid"
     ]
 
 proj_period = np.arange(1900, 2101, 1)

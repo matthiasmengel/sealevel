@@ -305,6 +305,88 @@ class solid_ice_discharge_ais(object):
 
         return discharge
 
+
+class antarctica_dp16(object):
+
+    """ An emulator of the Antarctic sea level response as in
+        Deconto & Pollard, Nature (2016). This emulator is the same
+        as in Nauels et al. 2017, ERL, submitted.
+    """
+
+    def __init__(self, parameters, temp_anomaly_year=None):
+
+        self.parameters = parameters
+        self.temp_anomaly_year = temp_anomaly_year
+
+        # maximum ice volume that can be lost
+        # see github.com/matthiasmengel/fast_ant_sid for why
+        # we use this hardcoded value.
+        max_volume_to_lose = 17560. # in m
+        self.initial_icesheet_vol = max_volume_to_lose
+
+
+    def square(arg):
+
+        """ quadratic temperature sensitvity """
+
+        return np.sign(arg)*np.square(arg)
+
+
+    def calc_solid_ice_discharge(self, forcing_temperature,
+        initial_icesheet_vol, temp_sensitivity=square):
+
+        """ Solid ice discharge as used in Nauels et al. 2017, ERL, submitted.
+            Assuming yearly time step, or dtime=1.
+        """
+
+        sid_sens, fast_rate, temp0, temp_thresh = self.parameters
+
+        def slow_discharge(volume, temperature, temp0, sid_sens):
+            # negative rates mean ice volume loss
+            return sid_sens*volume*temp_sensitivity(temperature-temp0)
+
+        ## time spans forcing period
+        time = np.arange(0,len(forcing_temperature),1)
+
+        icesheet_vol = np.zeros_like(forcing_temperature)
+        icesheet_vol[0] = initial_icesheet_vol
+        slr_from_sid = np.zeros_like(forcing_temperature)
+
+        # negative rates lead to sea level rise
+        fast_sid = fast_rate*np.array(forcing_temperature > temp_thresh,
+                                          dtype = np.float)
+
+        for t in time[0:-1]:
+            sid_slow = slow_discharge(icesheet_vol[t], forcing_temperature[t],
+                                       temp0, sid_sens)
+
+            # yearly discharge rate cannot be larger than remaining volume
+            discharge = np.minimum(icesheet_vol[t], sid_slow+fast_sid[t])
+            # positive sid rates mean ice volume loss
+            icesheet_vol[t+1] = icesheet_vol[t] - discharge
+            slr_from_sid[t+1] = initial_icesheet_vol - icesheet_vol[t+1]
+
+        return slr_from_sid
+
+    def calc_contribution(self, temperature):
+
+
+        if self.temp_anomaly_year is not None:
+            # do not let temperature drive ice loss before first year of SL
+            # observation
+            temperature -= temperature[self.temp_anomaly_year]
+            temperature[temperature.time < self.temp_anomaly_year] = 0.
+
+        # from dimarray to numpy array
+        temperature = temperature.values
+
+        # return in meter
+        return self.calc_solid_ice_discharge(temperature,
+                   self.initial_icesheet_vol)/1.e3
+
+
+
 contributor_functions = {"thermexp":thermal_expansion, "gic":glaciers_and_icecaps,
                          "gis_smb":surfacemassbalance_gis, "gis_sid":solid_ice_discharge_gis,
-                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais}
+                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais
+                         "ant_dp16":antarctica_dp16}

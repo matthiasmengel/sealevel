@@ -196,13 +196,3 @@ if "ant_smb" in settings.calibrate_these:
 
     ais_smb_params.to_csv(os.path.join(settings.calibfolder, "ant_smb.csv"))
 
-    # observation_period = "dummy"
-    # temp_anomaly_year = "dummy"
-    # sl_observation = "dummy"
-    # calib = calibration.Calibration(gmt, "ant_smb", sl_observation,
-    #                                 ais_prec_scaling, sl_contributor, observation_period, temp_anomaly_year)
-
-    # ais_smb_params = {"ligtenberg13": calib}
-
-    # outfile = os.path.join(settings.calibfolder, "ant_smb.pkl")
-    # pickle.dump({"params": ais_smb_params}, open(outfile, "wb"), protocol=2)

@@ -40,10 +40,11 @@ class thermal_expansion(object):
     """ Thermal expansion equilibrium sea level response and transient response.
         See M. Mengel et al., PNAS (2016), Materials and Methods and equ. 2. """
 
-    def __init__(self, alpha, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
         self.dtime = dtime
-        self.alpha = alpha
+        self.alpha = parameters[0]
+        self.tau = parameters[1]
 
     def te_equilibrium_sl(self, delta_temp):
         """ equilibrium response
@@ -51,7 +52,7 @@ class thermal_expansion(object):
 
         return self.alpha * delta_temp
 
-    def calc_contribution(self, delta_gmt, tau):
+    def calc_contribution(self, delta_gmt):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -62,7 +63,7 @@ class thermal_expansion(object):
         for t in np.arange(1, len(delta_gmt), 1):
 
             sl_rate = (self.te_equilibrium_sl(
-                delta_gmt[t - 1]) - sl_contrib[t - 1]) / tau
+                delta_gmt[t - 1]) - sl_contrib[t - 1]) / self.tau
             # sl_rate = np.maximum(sl_rate,0.)
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
@@ -106,10 +107,11 @@ class glaciers_and_icecaps(object):
         See M. Mengel et al., PNAS (2016), Materials and Methods and supplementary
         material. """
 
-    def __init__(self, modelno, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
         self.dtime = dtime
-        self.modelno = modelno
+        self.modelno = int(parameters[0])
+        self.tau = parameters[1]
         self.temp_anomaly_year = temp_anomaly_year
 
     def gic_equilibrium_sl(self, delta_temp):
@@ -118,7 +120,7 @@ class glaciers_and_icecaps(object):
 
         return gic_equi_functions[self.modelno](delta_temp)
 
-    def calc_contribution(self, delta_gmt, tau):
+    def calc_contribution(self, delta_gmt):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -134,7 +136,7 @@ class glaciers_and_icecaps(object):
 
         for t in np.arange(1, len(delta_gmt), 1):
             sl_rate = (self.gic_equilibrium_sl(
-                delta_gmt[t]) - sl_contrib[t - 1]) / tau
+                delta_gmt[t]) - sl_contrib[t - 1]) / self.tau
             # sl_rate = np.maximum(sl_rate,0.)
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
@@ -150,10 +152,11 @@ class surfacemassbalance_gis(object):
         See M. Mengel et al., PNAS (2016), Materials and Methods
     """
 
-    def __init__(self, smb_coeff, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
         self.dtime = dtime
-        self.smb_coeff = smb_coeff
+        self.smb_coeff = parameters[0]
+        self.tau = parameters[1]
         self.temp_anomaly_year = temp_anomaly_year
 
     def equilibrium_sl(self, delta_temp):
@@ -162,7 +165,7 @@ class surfacemassbalance_gis(object):
 
         return self.smb_coeff * np.sign(delta_temp) * delta_temp**2
 
-    def calc_contribution(self, delta_gmt, tau):
+    def calc_contribution(self, delta_gmt):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -179,7 +182,7 @@ class surfacemassbalance_gis(object):
         for t in np.arange(1, len(delta_gmt), 1):
 
             sl_rate = (self.equilibrium_sl(
-                delta_gmt[t]) - sl_contrib[t - 1]) / tau
+                delta_gmt[t]) - sl_contrib[t - 1]) / self.tau
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
         return sl_contrib
@@ -193,14 +196,14 @@ class surfacemassbalance_ais(object):
         we do not apply the pursuit curve method. We use scaling through the
         Clausius Clapeyron temperature dependence of water carrying capacity of air."""
 
-    def __init__(self, smb_coeff, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
         self.dtime = dtime
-        self.smb_coeff = smb_coeff
+        self.smb_coeff = parameters[0]
         # 25 per cent will be lost due to increased discharge.
         self.winkelmann_factor = 0.75
 
-    def calc_contribution(self, delta_gmt, dummy):
+    def calc_contribution(self, delta_gmt):
         """ Only scaling, no pursuit curve approach. See equ.5 in
             Materials and Methods."""
 
@@ -226,16 +229,17 @@ class solid_ice_discharge_gis(object):
         estimate available for solid ice discharge. We therefore use a response
         function approach, see equ. 4 in Materials and Methods. """
 
-    def __init__(self, alpha, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
-        self.alpha = alpha
+        self.alpha = parameters[0]
+        self.prefactor = parameters[1]
         self.dtime = dtime
         # tau in years; does only play a role in saturation, so not until 2100
         self.tau = 40.
         # self.calibrate = calibrate
         self.temp_anomaly_year = temp_anomaly_year
 
-    def calc_contribution(self, temperature, prefactor):
+    def calc_contribution(self, temperature):
         """ No pursuit curve, but response function approach. """
 
         oceantemp = temperature
@@ -255,7 +259,7 @@ class solid_ice_discharge_gis(object):
             # integrate over t to yield slr, see winkelmann response function
             # paper p. 2581
             tp = np.arange(t)
-            discharge_rate = prefactor * \
+            discharge_rate = self.prefactor * \
                 np.trapz(otemp[tp] * ((t - tp))**self.alpha, dx=self.dtime)
             discharge_rate = np.maximum(discharge_rate, 0.0)
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
@@ -272,9 +276,10 @@ class solid_ice_discharge_ais(object):
         See M. Mengel et al., PNAS (2016), Materials and Methods
     """
 
-    def __init__(self, alpha, temp_anomaly_year=None):
+    def __init__(self, parameters, temp_anomaly_year=None):
 
-        self.alpha = alpha
+        self.alpha = parameters[0]
+        self.tau = parameters[1]
         self.dtime = dtime
         self.temp_anomaly_year = temp_anomaly_year
 
@@ -282,7 +287,7 @@ class solid_ice_discharge_ais(object):
         """ see equ. 6 in Materials and Methods. """
         return self.alpha * delta_temp
 
-    def calc_contribution(self, temperature, tau):
+    def calc_contribution(self, temperature):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -299,7 +304,7 @@ class solid_ice_discharge_ais(object):
         for t in np.arange(1, len(temperature), 1):
 
             discharge_rate = (self.equilibrium_sl(
-                temperature[t]) - discharge[t - 1]) / tau
+                temperature[t]) - discharge[t - 1]) / self.tau
             discharge_rate = np.maximum(discharge_rate, 0.0)
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
 
@@ -388,5 +393,5 @@ class antarctica_dp16(object):
 
 contributor_functions = {"thermexp":thermal_expansion, "gic":glaciers_and_icecaps,
                          "gis_smb":surfacemassbalance_gis, "gis_sid":solid_ice_discharge_gis,
-                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais
+                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais,
                          "ant_dp16":antarctica_dp16}

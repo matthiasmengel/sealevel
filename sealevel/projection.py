@@ -69,20 +69,19 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
     # print contrib_name, temp_anomaly_year
     # use one of the observational dataset
     obs_choice = np.random.choice(calibdata.index.unique())
-    params = calibdata.loc[obs_choice]
+    params_of_obs = calibdata.loc[obs_choice]
     # temp_anomaly_year = params.temp_anomaly_year
 
     if obs_choice == "box_colgan13":
         driving_temperature += gis_colgan_temperature_offset
 
     # choose a random parameter set
-    tuple_choice = np.random.randint(len(params))
-    independent_param = params["independent_param"][tuple_choice]
-    dependent_param = params["dependent_param"][tuple_choice]
-    # print "tuple",independent_param,dependent_param
+    paramset_choice = np.random.randint(len(params_of_obs.index))
+    # can be variable number of parameters per each observation
+    # dp16 has 4 fitted parameters, for example.
+    params = params_of_obs.iloc[paramset_choice,:]
 
-    contributor = sl_contributor(independent_param, temp_anomaly_year[obs_choice])
-    contrib = contributor.calc_contribution(
-        driving_temperature, dependent_param)
+    contributor = sl_contributor(params, temp_anomaly_year[obs_choice])
+    contrib = contributor.calc_contribution(driving_temperature)
     # print contrib
-    return [contrib, gmt_choice, obs_choice, independent_param, dependent_param]
+    return [contrib, gmt_choice, obs_choice, params]

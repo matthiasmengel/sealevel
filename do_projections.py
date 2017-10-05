@@ -56,7 +56,7 @@ for scen in settings.scenarios:
         proj = np.zeros([len(settings.proj_period), settings.nrealizations])
 
         for n in realizations:
-            slr, gmt_n, obs_choice, ind_param, dep_param = pr.project(
+            slr, gmt_n, obs_choice, params = pr.project(
                 gmt, settings.proj_period, calibdata, temp_anomaly_year,
                 sl_contributor, n)
             proj[:, n] = slr

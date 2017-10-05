@@ -60,15 +60,15 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         gmt_ensemble_size = gmt.shape[1]
         gmt_choice = np.random.randint(gmt_ensemble_size)
         # print gmt_choice
-        driving_temperature = gmt[proj_period, gmt_choice]
+        driving_temperature = gmt[:, gmt_choice]
     except IndexError:
         # this is the case if single gmt is supplied
         gmt_choice = 0
-        driving_temperature = gmt[proj_period]
+        driving_temperature = gmt
 
     # print contrib_name, temp_anomaly_year
-    # use one of the observational dataset
 
+    # use one of the observational dataset
     obs_choice = np.random.choice(calibdata.index.unique())
     params_of_obs = calibdata.loc[obs_choice]
     # print params_of_obs
@@ -89,6 +89,7 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         params = params_of_obs.iloc[paramset_choice,:]
 
     contributor = sl_contributor(params, temp_anomaly_year[obs_choice])
-    contrib = contributor.calc_contribution(driving_temperature)
+    contrib = contributor.calc_contribution(
+        driving_temperature,proj_period)
     # print contrib
     return [contrib, gmt_choice, obs_choice, params]

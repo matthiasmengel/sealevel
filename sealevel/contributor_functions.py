@@ -52,11 +52,11 @@ class thermal_expansion(object):
 
         return self.alpha * delta_temp
 
-    def calc_contribution(self, delta_gmt):
+    def calc_contribution(self, delta_gmt, proj_period):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
-        delta_gmt = delta_gmt.values
+        delta_gmt = delta_gmt[proj_period].values
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
         sl_rate = 0.0
 
@@ -120,7 +120,7 @@ class glaciers_and_icecaps(object):
 
         return gic_equi_functions[self.modelno](delta_temp)
 
-    def calc_contribution(self, delta_gmt):
+    def calc_contribution(self, delta_gmt, proj_period):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -130,7 +130,7 @@ class glaciers_and_icecaps(object):
             delta_gmt -= delta_gmt[self.temp_anomaly_year]
             delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
 
-        delta_gmt = delta_gmt.values
+        delta_gmt = delta_gmt[proj_period].values
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
         sl_rate = 0.0
 
@@ -165,7 +165,7 @@ class surfacemassbalance_gis(object):
 
         return self.smb_coeff * np.sign(delta_temp) * delta_temp**2
 
-    def calc_contribution(self, delta_gmt):
+    def calc_contribution(self, delta_gmt, proj_period):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -175,7 +175,7 @@ class surfacemassbalance_gis(object):
             delta_gmt -= delta_gmt[self.temp_anomaly_year]
             delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
 
-        delta_gmt = delta_gmt.values
+        delta_gmt = delta_gmt[proj_period].values
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
         sl_rate = 0.0
 
@@ -203,11 +203,11 @@ class surfacemassbalance_ais(object):
         # 25 per cent will be lost due to increased discharge.
         self.winkelmann_factor = 0.75
 
-    def calc_contribution(self, delta_gmt):
+    def calc_contribution(self, delta_gmt, proj_period):
         """ Only scaling, no pursuit curve approach. See equ.5 in
             Materials and Methods."""
 
-        delta_gmt = delta_gmt.values
+        delta_gmt = delta_gmt[proj_period].values
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
         sl_rate = 0.0
 
@@ -239,7 +239,7 @@ class solid_ice_discharge_gis(object):
         # self.calibrate = calibrate
         self.temp_anomaly_year = temp_anomaly_year
 
-    def calc_contribution(self, temperature):
+    def calc_contribution(self, temperature, proj_period):
         """ No pursuit curve, but response function approach. """
 
         oceantemp = temperature
@@ -250,7 +250,7 @@ class solid_ice_discharge_gis(object):
             oceantemp -= oceantemp[self.temp_anomaly_year]
             oceantemp[oceantemp.time < self.temp_anomaly_year] = 0.
 
-        otemp = oceantemp.values
+        otemp = oceantemp[proj_period].values
         # print otemp
         discharge = np.zeros_like(otemp, dtype="float")
 
@@ -287,7 +287,7 @@ class solid_ice_discharge_ais(object):
         """ see equ. 6 in Materials and Methods. """
         return self.alpha * delta_temp
 
-    def calc_contribution(self, temperature):
+    def calc_contribution(self, temperature, proj_period):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
 
@@ -297,7 +297,7 @@ class solid_ice_discharge_ais(object):
             temperature -= temperature[self.temp_anomaly_year]
             temperature[temperature.time < self.temp_anomaly_year] = 0.
 
-        temperature = temperature.values
+        temperature = temperature[proj_period].values
         discharge = np.zeros_like(temperature, dtype="float")
         discharge_rate = 0
 
@@ -373,17 +373,13 @@ class antarctica_dp16(object):
 
         return slr_from_sid
 
-    def calc_contribution(self, temperature):
+    def calc_contribution(self, temperature, proj_period):
 
-
-        if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss before first year of SL
-            # observation
-            temperature -= temperature[self.temp_anomaly_year]
-            temperature[temperature.time < self.temp_anomaly_year] = 0.
-
+        # make the temperature relative to year 1850, as we calibrated
+        # the fast_ant_sid contribution to gmt relative to 1850.
+        temperature -= temperature[1850]
         # from dimarray to numpy array
-        temperature = temperature.values
+        temperature = temperature[proj_period].values
 
         # return in meter
         return self.calc_solid_ice_discharge(temperature,

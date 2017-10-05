@@ -32,44 +32,6 @@ area_ocean = 3.61132e14  # % m^2
 area_antarctica = 0.14e14  # m^2
 
 
-
-################################################
-
-class thermal_expansion(object):
-
-    """ Thermal expansion equilibrium sea level response and transient response.
-        See M. Mengel et al., PNAS (2016), Materials and Methods and equ. 2. """
-
-    def __init__(self, parameters, temp_anomaly_year=None):
-
-        self.dtime = dtime
-        self.alpha = parameters[0]
-        self.tau = parameters[1]
-
-    def te_equilibrium_sl(self, delta_temp):
-        """ equilibrium response
-            alpha is the equilibrium sl sensitivity in m/K """
-
-        return self.alpha * delta_temp
-
-    def calc_contribution(self, delta_gmt, proj_period):
-        """ transient response, see equ. 1 in
-            M. Mengel et al., PNAS (2016) """
-
-        delta_gmt = delta_gmt[proj_period].values
-        sl_contrib = np.zeros_like(delta_gmt, dtype="float")
-        sl_rate = 0.0
-
-        for t in np.arange(1, len(delta_gmt), 1):
-
-            sl_rate = (self.te_equilibrium_sl(
-                delta_gmt[t - 1]) - sl_contrib[t - 1]) / self.tau
-            # sl_rate = np.maximum(sl_rate,0.)
-            sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
-
-        return sl_contrib
-
-
 ################################################
 
 ## equilibrium sea level functions for mountain glaciers
@@ -101,24 +63,17 @@ for coeffs in gic_equi_coeffs:
     gic_equi_functions.append(func_creator(*coeffs))
 
 
-class glaciers_and_icecaps(object):
+class contribution(object):
 
-    """ Glaciers and ice caps equilibrium sea level response and transient response.
-        See M. Mengel et al., PNAS (2016), Materials and Methods and supplementary
-        material. """
+
+    """ General class for sea level contributors. """
 
     def __init__(self, parameters, temp_anomaly_year=None):
 
         self.dtime = dtime
-        self.modelno = int(parameters[0])
+        self.alpha = parameters[0]
         self.tau = parameters[1]
         self.temp_anomaly_year = temp_anomaly_year
-
-    def gic_equilibrium_sl(self, delta_temp):
-        """ glacier equilbrium response via custom functions, see
-            M. Mengel et al., PNAS (2016), equation in supplementary material. """
-
-        return gic_equi_functions[self.modelno](delta_temp)
 
     def calc_contribution(self, delta_gmt, proj_period):
         """ transient response, see equ. 1 in
@@ -135,17 +90,49 @@ class glaciers_and_icecaps(object):
         sl_rate = 0.0
 
         for t in np.arange(1, len(delta_gmt), 1):
-            sl_rate = (self.gic_equilibrium_sl(
-                delta_gmt[t]) - sl_contrib[t - 1]) / self.tau
+
+            sl_rate = (self.equilibrium_sl(
+                delta_gmt[t - 1]) - sl_contrib[t - 1]) / self.tau
             # sl_rate = np.maximum(sl_rate,0.)
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
         return sl_contrib
 
 
-################################################
 
-class surfacemassbalance_gis(object):
+class thermal_expansion(contribution):
+
+    """ Thermal expansion equilibrium sea level response and transient response.
+        See M. Mengel et al., PNAS (2016), Materials and Methods and equ. 2. """
+
+    def equilibrium_sl(self, delta_temp):
+        """ equilibrium response
+            alpha is the equilibrium sl sensitivity in m/K """
+
+        return self.alpha * delta_temp
+
+
+class glaciers_and_icecaps(contribution):
+
+    """ Glaciers and ice caps equilibrium sea level response and transient response.
+        See M. Mengel et al., PNAS (2016), Materials and Methods and supplementary
+        material. """
+
+    def __init__(self, parameters, temp_anomaly_year=None):
+
+        self.dtime = dtime
+        self.modelno = int(parameters[0])
+        self.tau = parameters[1]
+        self.temp_anomaly_year = temp_anomaly_year
+
+    def equilibrium_sl(self, delta_temp):
+        """ glacier equilbrium response via custom functions, see
+            M. Mengel et al., PNAS (2016), equation in supplementary material. """
+
+        return gic_equi_functions[self.modelno](delta_temp)
+
+
+class surfacemassbalance_gis(contribution):
 
     """ Greenland ice sheet surface mass balaance
         equilibrium sea level response and transient response.
@@ -165,32 +152,8 @@ class surfacemassbalance_gis(object):
 
         return self.smb_coeff * np.sign(delta_temp) * delta_temp**2
 
-    def calc_contribution(self, delta_gmt, proj_period):
-        """ transient response, see equ. 1 in
-            M. Mengel et al., PNAS (2016) """
 
-        if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss before first year of SL
-            # observation
-            delta_gmt -= delta_gmt[self.temp_anomaly_year]
-            delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
-
-        delta_gmt = delta_gmt[proj_period].values
-        sl_contrib = np.zeros_like(delta_gmt, dtype="float")
-        sl_rate = 0.0
-
-        for t in np.arange(1, len(delta_gmt), 1):
-
-            sl_rate = (self.equilibrium_sl(
-                delta_gmt[t]) - sl_contrib[t - 1]) / self.tau
-            sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
-
-        return sl_contrib
-
-
-################################################
-
-class surfacemassbalance_ais(object):
+class surfacemassbalance_ais(contribution):
 
     """ Antarctic ice sheet surface mass balance. This is not calibrated and
         we do not apply the pursuit curve method. We use scaling through the
@@ -221,9 +184,7 @@ class surfacemassbalance_ais(object):
         return -sl_contrib * area_antarctica / area_ocean
 
 
-################################################
-
-class solid_ice_discharge_gis(object):
+class solid_ice_discharge_gis(contribution):
 
     """ Solid ice discharge from the Greenland ice sheet. There is no equilibrium
         estimate available for solid ice discharge. We therefore use a response
@@ -234,9 +195,6 @@ class solid_ice_discharge_gis(object):
         self.alpha = parameters[0]
         self.prefactor = parameters[1]
         self.dtime = dtime
-        # tau in years; does only play a role in saturation, so not until 2100
-        self.tau = 40.
-        # self.calibrate = calibrate
         self.temp_anomaly_year = temp_anomaly_year
 
     def calc_contribution(self, temperature, proj_period):
@@ -267,51 +225,21 @@ class solid_ice_discharge_gis(object):
         return discharge
 
 
-################################################
-
-class solid_ice_discharge_ais(object):
+class solid_ice_discharge_ais(contribution):
 
     """ Antarctic ice sheet solid ice discharge,
         equilibrium sea level response and transient response.
         See M. Mengel et al., PNAS (2016), Materials and Methods
     """
 
-    def __init__(self, parameters, temp_anomaly_year=None):
-
-        self.alpha = parameters[0]
-        self.tau = parameters[1]
-        self.dtime = dtime
-        self.temp_anomaly_year = temp_anomaly_year
 
     def equilibrium_sl(self, delta_temp):
         """ see equ. 6 in Materials and Methods. """
         return self.alpha * delta_temp
 
-    def calc_contribution(self, temperature, proj_period):
-        """ transient response, see equ. 1 in
-            M. Mengel et al., PNAS (2016) """
-
-        if self.temp_anomaly_year is not None:
-            # do not let temperature drive ice loss before first year of SL
-            # observation
-            temperature -= temperature[self.temp_anomaly_year]
-            temperature[temperature.time < self.temp_anomaly_year] = 0.
-
-        temperature = temperature[proj_period].values
-        discharge = np.zeros_like(temperature, dtype="float")
-        discharge_rate = 0
-
-        for t in np.arange(1, len(temperature), 1):
-
-            discharge_rate = (self.equilibrium_sl(
-                temperature[t]) - discharge[t - 1]) / self.tau
-            discharge_rate = np.maximum(discharge_rate, 0.0)
-            discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
-
-        return discharge
 
 
-class antarctica_dp16(object):
+class antarctica_dp16(contribution):
 
     """ An emulator of the Antarctic sea level response as in
         Deconto & Pollard, Nature (2016). This emulator is the same

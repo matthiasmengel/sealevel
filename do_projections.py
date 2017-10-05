@@ -58,7 +58,7 @@ for scen in settings.scenarios:
         for n in realizations:
             slr, gmt_n, obs_choice, params = pr.project(
                 gmt, settings.proj_period, calibdata, temp_anomaly_year,
-                sl_contributor, n)
+                sl_contributor, n, contrib_name)
             proj[:, n] = slr
 
         pdata = da.DimArray(proj, axes=[settings.proj_period, realizations],

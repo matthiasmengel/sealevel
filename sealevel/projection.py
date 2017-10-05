@@ -29,7 +29,7 @@ gis_colgan_temperature_offset = 0.5
 ######## sea level projection using for Monte-Carlo sampling ########
 
 def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
-            sample_number):
+            sample_number, contrib_name):
     """
     Monte Carlo sampling for slr contribution
     for a single global mean temperature (gmt) timeseries or
@@ -68,18 +68,25 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
 
     # print contrib_name, temp_anomaly_year
     # use one of the observational dataset
+
     obs_choice = np.random.choice(calibdata.index.unique())
     params_of_obs = calibdata.loc[obs_choice]
+    # print params_of_obs
     # temp_anomaly_year = params.temp_anomaly_year
 
     if obs_choice == "box_colgan13":
         driving_temperature += gis_colgan_temperature_offset
 
-    # choose a random parameter set
-    paramset_choice = np.random.randint(len(params_of_obs.index))
-    # can be variable number of parameters per each observation
-    # dp16 has 4 fitted parameters, for example.
-    params = params_of_obs.iloc[paramset_choice,:]
+        # for dp16, the different ensemble members are interpreted
+        # as different observations, so selection already happened
+        # above through obs_choice
+    if contrib_name == "ant_dp16":
+        params = params_of_obs
+    else:
+        # choose a random parameter set
+        paramset_choice = np.random.randint(len(params_of_obs.index))
+        # can be variable number of parameters per each observation
+        params = params_of_obs.iloc[paramset_choice,:]
 
     contributor = sl_contributor(params, temp_anomaly_year[obs_choice])
     contrib = contributor.calc_contribution(driving_temperature)

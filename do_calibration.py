@@ -19,17 +19,17 @@ import pandas as pd
 
 import settings
 reload(settings)
-import src.calibration as calibration
+import sealevel.calibration as calibration
 reload(calibration)
-import src.contributor_functions as cf
+import sealevel.contributor_functions as cf
 reload(cf)
-import src.get_calibration_data as gcd
+import sealevel.get_calibration_data as gcd
 reload(gcd)
-import src.calib_settings as cs
+import sealevel.calib_settings as cs
 reload(cs)
-import src.get_gmt_data as ggd
+import sealevel.get_gmt_data as ggd
 reload(ggd)
-import src.projection as sl
+import sealevel.projection as sl
 reload(sl)
 
 

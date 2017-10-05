@@ -12,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
-""" Minimal way to do sea level projectoons using the src.projection.project
+""" Minimal way to do sea level projectoons using the sealevel.projection.project
     function.
 """
 
@@ -23,13 +23,13 @@ import settings
 import dimarray as da
 import pandas as pd
 reload(settings)
-import src.projection as pr
+import sealevel.projection as pr
 reload(pr)
-import src.get_magicc_gmt_data as mag
+import sealevel.get_magicc_gmt_data as mag
 reload(mag)
-import src.contributor_functions as cf
+import sealevel.contributor_functions as cf
 reload(cf)
-import src.calib_settings as cs
+import sealevel.calib_settings as cs
 reload(cs)
 
 realizations = np.arange(settings.nrealizations)

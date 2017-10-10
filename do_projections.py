@@ -16,55 +16,27 @@
     function.
 """
 
-import os
-import numpy as np
-import cPickle as pickle
+# import os
+# import numpy as np
+# import cPickle as pickle
+# import dimarray as da
+# import pandas as pd
 import settings
-import dimarray as da
-import pandas as pd
 reload(settings)
 import sealevel.projection as pr
 reload(pr)
 import sealevel.get_magicc_gmt_data as mag
 reload(mag)
-import sealevel.contributor_functions as cf
-reload(cf)
-import sealevel.calib_settings as cs
-reload(cs)
 
-realizations = np.arange(settings.nrealizations)
-projection_data = {}
+if __name__ == "__main__":
 
-for scen in settings.scenarios:
+    projection_data = {}
 
-    print "scenario", scen
+    for scen in settings.scenarios:
 
-    projection_data[scen] = {}
-    gmt = mag.magicc_gmt[scen]
+        print "scenario", scen
 
-    for i, contrib_name in enumerate(settings.project_these):
+        # projection_data[scen] = {}
+        gmt = mag.magicc_gmt[scen]
 
-        print "conribution", contrib_name
-
-        calibdata = pd.read_csv(
-            os.path.join(settings.calibfolder, contrib_name+".csv"),
-            index_col=[0])
-
-        temp_anomaly_year = cs.temp_anomaly_year[contrib_name]
-        sl_contributor = cf.contributor_functions[contrib_name]
-
-        proj = np.zeros([len(settings.proj_period), settings.nrealizations])
-
-        for n in realizations:
-            slr, gmt_n, obs_choice, params = pr.project(
-                gmt, settings.proj_period, calibdata, temp_anomaly_year,
-                sl_contributor, n, contrib_name)
-            proj[:, n] = slr
-
-        pdata = da.DimArray(proj, axes=[settings.proj_period, realizations],
-                            dims=["time", "runnumber"])
-        projection_data[scen][contrib_name] = pdata
-
-        fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
-        da.Dataset(projection_data[scen]).write_nc(os.path.join(
-            settings.projected_slr_folder,fname))
+        pr.project_slr(scen, gmt, settings)

@@ -15,6 +15,13 @@
 
 import os
 import numpy as np
+import pandas as pd
+import dimarray as da
+import calib_settings as cs
+reload(cs)
+import sealevel.contributor_functions as cf
+reload(cf)
+
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir, "data/")
@@ -93,3 +100,37 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         driving_temperature,proj_period)
     # print contrib
     return [contrib, gmt_choice, obs_choice, params]
+
+
+
+def project_slr(scen, gmt, settings):
+
+    for i, contrib_name in enumerate(settings.project_these):
+
+        print "conribution", contrib_name
+
+        realizations = np.arange(settings.nrealizations)
+        projection_data = {}
+        calibdata = pd.read_csv(
+            os.path.join(settings.calibfolder, contrib_name+".csv"),
+            index_col=[0])
+
+        temp_anomaly_year = cs.temp_anomaly_year[contrib_name]
+        sl_contributor = cf.contributor_functions[contrib_name]
+
+        proj = np.zeros([len(settings.proj_period), settings.nrealizations])
+
+        for n in realizations:
+            slr, gmt_n, obs_choice, params = project(
+                gmt, settings.proj_period, calibdata, temp_anomaly_year,
+                sl_contributor, n, contrib_name)
+            proj[:, n] = slr
+
+        pdata = da.DimArray(proj, axes=[settings.proj_period, realizations],
+                            dims=["time", "runnumber"])
+
+        projection_data[contrib_name] = pdata
+
+        fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
+        da.Dataset(projection_data).write_nc(os.path.join(
+            settings.projected_slr_folder,fname))

@@ -105,12 +105,13 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
 
 def project_slr(scen, gmt, settings):
 
+    projection_data = {}
+
     for i, contrib_name in enumerate(settings.project_these):
 
         print "conribution", contrib_name
 
         realizations = np.arange(settings.nrealizations)
-        projection_data = {}
         calibdata = pd.read_csv(
             os.path.join(settings.calibfolder, contrib_name+".csv"),
             index_col=[0])
@@ -131,6 +132,7 @@ def project_slr(scen, gmt, settings):
 
         projection_data[contrib_name] = pdata
 
-        fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
-        da.Dataset(projection_data).write_nc(os.path.join(
-            settings.projected_slr_folder,fname))
+    # print projection_data
+    fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
+    da.Dataset(projection_data).write_nc(os.path.join(
+        settings.projected_slr_folder,fname))

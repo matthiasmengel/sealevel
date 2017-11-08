@@ -197,6 +197,7 @@ class solid_ice_discharge_gis(contribution):
         self.dtime = dtime
         self.temp_anomaly_year = temp_anomaly_year
 
+    # @profile
     def calc_contribution(self, temperature, proj_period):
         """ No pursuit curve, but response function approach. """
 

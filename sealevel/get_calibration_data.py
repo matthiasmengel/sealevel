@@ -343,12 +343,10 @@ box_smb_offset = box_smb_rate[
 box_gis_smb = convert_raw_mb_to_sl(boxdata)
 # hanna_gis_smb = convert_raw_mb_to_sl(hannadata)
 
-# assume 50% of church mass loss was due to smb,
-# recent estimates, though for shorter time periods: andersen_senseng15: 61% smb
-# csatho_schenk14 over period 2003-2009 Fig.4 and Table S5:
-# Total  SMB: 763 +-53 SID: 698 +-94, so 52%
-church_gis_smb = church_observed['gis'] * 0.5
-church_gis_sid = church_observed['gis'] * 0.5
+# assume 60% of church mass loss was due to smb,
+# following Van den Broeke et al. 2016 www.the-cryosphere.net/10/1933/2016/
+church_gis_smb = church_observed['gis'] * 0.6
+church_gis_sid = church_observed['gis'] * 0.4
 
 # Sasgen et al. 2012, http://dx.doi.org/10.1007/s10712-013-9261-z
 rawdata = np.loadtxt(
@@ -377,6 +375,31 @@ angelen_smbrate = angelen_smbrate - \
     angelen_smbrate[1960:1990].mean() + box_smb_offset
 angelen14 = angelen_smbrate.cumsum()
 
+# Van den Broeke et al. 2016 www.the-cryosphere.net/10/1933/2016/
+rawdata = np.loadtxt(
+    inputdatadir +
+    "greenland_broeke16/broeke_enderlin16_smb.csv",
+    delimiter=",")
+fn = scipy.interpolate.interp1d(
+    rawdata[:, 0], -1. * rawdata[:, 1] / 360. / 1.e3)  # in m SLE
+broeke16_smb = da.DimArray(fn(np.arange(1959, 2014, 1)),
+                         axes=np.arange(1959, 2014, 1), dims="time")
+broeke16_gis_smb = (broeke16_smb - broeke16_smb[1961:1990].mean()).cumsum()
+
+# Forsberg et al. 2017, DOI 10.1007/s10712-016-9398-7
+rawdata = np.loadtxt(
+    inputdatadir +
+    "greenland_forsberg17/forsberg_sorensen17_grace.csv",
+    delimiter=",")
+fn = scipy.interpolate.interp1d(
+    rawdata[:, 0], -1. * rawdata[:, 1] / 360. / 1.e3)  # in m SLE
+forsberg = da.DimArray(fn(np.arange(2009, 2017, 1)),
+                         axes=np.arange(2009, 2017, 1), dims="time")
+
+# assume 60% of Forsberg mass loss was due to smb,
+# following Van den Broeke et al. 2016 www.the-cryosphere.net/10/1933/2016/
+forsberg17_gis_smb = forsberg*0.6
+forsberg17_gis_sid = forsberg*0.4
 
 ######## Greenland solid ice discharge ########
 
@@ -394,6 +417,17 @@ fn = scipy.interpolate.interp1d(
     rawdata[:, 0], -1. * rawdata[:, 1] / 360. / 1.e3)  # in m SLE
 sasgen_sid = da.DimArray(fn(np.arange(1959, 2009, 1)),
                          axes=np.arange(1959, 2009, 1), dims="time")
+
+rawdata = np.loadtxt(
+    inputdatadir +
+    "greenland_broeke16/broeke_enderlin16_sid.csv",
+    delimiter=",")
+fn = scipy.interpolate.interp1d(
+    rawdata[:, 0], -1. * rawdata[:, 1] / 360. / 1.e3)  # in m SLE
+broeke16_sid = da.DimArray(fn(np.arange(1959, 2016, 1)),
+                         axes=np.arange(1959, 2016, 1), dims="time")
+broeke16_gis_sid = -1.*(broeke16_sid - broeke16_sid[1961:1990].mean()).cumsum()
+
 
 # andresen straneo nature geoscience 2012, 1.5 degC (not used currently)
 gis_ocean_warming_obs_1992_2008 = da.DimArray(

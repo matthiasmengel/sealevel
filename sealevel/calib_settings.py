@@ -103,23 +103,32 @@ for obs in gic_observations:
 ######## Greenland surface mass balance ########
 
 gis_smb_observations = collections.OrderedDict([
-    ("church11", gd.church_gis_smb),
-    ("angelen14", gd.angelen14),
+
+    ("broeke16", gd.broeke16_gis_smb),
+    ("forsberg17", gd.forsberg17_gis_smb),
     ("box_colgan13", gd.box_gis_smb),
+    # ("church11", gd.church_gis_smb),
+    # ("angelen14", gd.angelen14),
 ])
 
 op = np.arange(1960, 2014, 1)
 observation_period["gis_smb"] = {
+    "broeke16": None,
+    "forsberg17": None,
     "box_colgan13": None,
-    "church11": None,
-    "angelen14": None}
+    # "church11": None,
+    # "angelen14": None
+    }
 # Note: anomaly year should never be set later than first year of observations, otherwise
 # the "zero or negative" before anomaly year is included for calibration
 # which is bad.
 temp_anomaly_year["gis_smb"] = {
+    "broeke16": None,
+    "forsberg17": None,
     "box_colgan13": None,
-    "church11": None,
-    "angelen14": None}
+    # "church11": None,
+    # "angelen14": None
+    }
 
 
 ######## Greenland solid ice discharge ########

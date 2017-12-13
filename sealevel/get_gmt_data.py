@@ -10,7 +10,7 @@ inputdatadir = os.path.join(project_dir, "data/input/")
 try:
     hadcrut = np.loadtxt(
         inputdatadir +
-        "hadcrut4/HadCRUT.4.4.0.0.annual_ns_avg.txt")
+        "hadcrut4/HadCRUT.4.6.0.0.annual_ns_avg.txt")
 except IOError:
     raise IOError("HADcrut v4.0 temperature data missing, " +
                   "please run src/download_input_data.py first")

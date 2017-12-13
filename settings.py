@@ -26,10 +26,10 @@ project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb",
                     "ant_sid","ant_dp16"]
 
 calibrate_these = [
-    # "thermexp",
-    # "gic",
+    "thermexp",
+    "gic",
     "gis_smb",
-    # "gis_sid",
+    "gis_sid",
     # "ant_smb",
     # "ant_sid",
     ]

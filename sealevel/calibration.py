@@ -56,32 +56,6 @@ class Calibration(object):
             self.cal_period = np.arange(cal_period_0, cal_period_1 + 1, 1)
 
 
-    def calc_residuals(self, param, sl_function):
-        """ Only residuals in calibration period play a role for fit.
-            Residuals start always with zero in the first year of cal_period. """
-
-        contrib = da.DimArray(
-            sl_function(
-                self.gmt,
-                param),
-            axes=self.gmt.time,
-            dims="time")
-        residuals = da.DimArray(
-            np.zeros_like(
-                contrib.values),
-            axes=self.gmt.time,
-            dims="time")
-
-        residuals[self.cal_period] = self.sl_observation[
-            self.cal_period] - contrib[self.cal_period]
-        residuals[self.cal_period] -= residuals[self.cal_period[0]]
-        # alternative, but untested, residuals relative to their mean, may reduce
-        # dependency on the very first value.
-        # residuals[self.cal_period] -= residuals[self.cal_period].mean()
-
-        return residuals.values
-
-
     def calibrate(self):
 
         ## first guess for tau
@@ -89,10 +63,30 @@ class Calibration(object):
         optimal_tau = np.zeros_like(self.commitment_parameter, dtype="float")
         for i, cparam in enumerate(self.commitment_parameter):
 
-            cl = self.sl_contributor(cparam, self.temp_anomaly_year)
-            sl_function = cl.calc_contribution
-            optimal_tau[i], pcov = leastsq(
-                self.calc_residuals, tau0, args=(sl_function))
+            cl = self.sl_contributor([cparam,"dummy"], self.temp_anomaly_year)
+
+            def calc_residuals(param_to_calibrate):
+                """ Only residuals in calibration period play a role for fit.
+                    Residuals start always with zero in the first year of cal_period. """
+
+                proj_period = self.gmt.time
+                contrib = da.DimArray(
+                    cl.calc_contribution(self.gmt, proj_period, param_to_calibrate),
+                    axes=proj_period,
+                    dims="time")
+                residuals = da.DimArray(
+                    np.zeros_like(
+                        contrib.values),
+                    axes=proj_period,
+                    dims="time")
+
+                residuals[self.cal_period] = self.sl_observation[
+                    self.cal_period] - contrib[self.cal_period]
+                residuals[self.cal_period] -= residuals[self.cal_period[0]]
+
+                return residuals.values
+
+            optimal_tau[i], pcov = leastsq(calc_residuals, tau0)
 
             print "cparam=", cparam, " tau=", optimal_tau[i]
 

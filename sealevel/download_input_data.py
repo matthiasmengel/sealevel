@@ -34,7 +34,7 @@ def download(info, source, targetdir, target=None):
 
 
 info = "Hadcrut4 global mean temperature timeseries"
-source = "http://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/time_series/HadCRUT.4.4.0.0.annual_ns_avg.txt"
+source = "https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/time_series/HadCRUT.4.6.0.0.annual_ns_avg.txt"
 download(info, source, "hadcrut4")
 
 info = "GISSTEMP global mean temperature series"

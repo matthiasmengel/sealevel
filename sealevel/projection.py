@@ -94,7 +94,7 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         paramset_choice = np.random.randint(len(params_of_obs.index))
         # can be variable number of parameters per each observation
         params = params_of_obs.iloc[paramset_choice,:]
-        print "pp",params
+        # print "pp",params
     contributor = sl_contributor(params, temp_anomaly_year[obs_choice])
     contrib = contributor.calc_contribution(
         driving_temperature,proj_period)

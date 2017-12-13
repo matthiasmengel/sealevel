@@ -75,9 +75,13 @@ class contribution(object):
         self.tau = parameters[1]
         self.temp_anomaly_year = temp_anomaly_year
 
-    def calc_contribution(self, delta_gmt, proj_period):
+    def calc_contribution(self, delta_gmt, proj_period, tau=None):
         """ transient response, see equ. 1 in
             M. Mengel et al., PNAS (2016) """
+
+        # for projection, tau needs not to be explicitely provided
+        # as argument. in calibration it has to.
+        if tau is None: tau = self.tau
 
         if self.temp_anomaly_year is not None:
             # do not let temperature drive ice loss before first year of SL
@@ -92,7 +96,7 @@ class contribution(object):
         for t in np.arange(1, len(delta_gmt), 1):
 
             sl_rate = (self.equilibrium_sl(
-                delta_gmt[t - 1]) - sl_contrib[t - 1]) / self.tau
+                delta_gmt[t - 1]) - sl_contrib[t - 1]) / tau
             # sl_rate = np.maximum(sl_rate,0.)
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
@@ -198,8 +202,12 @@ class solid_ice_discharge_gis(contribution):
         self.temp_anomaly_year = temp_anomaly_year
 
     # @profile
-    def calc_contribution(self, temperature, proj_period):
+    def calc_contribution(self, temperature, proj_period, prefactor=None):
         """ No pursuit curve, but response function approach. """
+
+        # for projection, tau needs not to be explicitely provided
+        # as argument. in calibration it has to.
+        if prefactor is None: prefactor = self.prefactor
 
         oceantemp = temperature
 
@@ -218,7 +226,7 @@ class solid_ice_discharge_gis(contribution):
             # integrate over t to yield slr, see winkelmann response function
             # paper p. 2581
             tp = np.arange(t)
-            discharge_rate = self.prefactor * \
+            discharge_rate = prefactor * \
                 np.trapz(otemp[tp] * ((t - tp))**self.alpha, dx=self.dtime)
             discharge_rate = np.maximum(discharge_rate, 0.0)
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate

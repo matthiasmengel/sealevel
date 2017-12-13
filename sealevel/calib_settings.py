@@ -134,23 +134,30 @@ temp_anomaly_year["gis_smb"] = {
 ######## Greenland solid ice discharge ########
 
 gis_sid_observations = collections.OrderedDict([
-    ("sasgen12", gd.sasgen_sid),
-    ("church11", gd.church_gis_sid),
+    ("broeke16", gd.broeke16_gis_sid),
+    ("forsberg17", gd.forsberg17_gis_sid),
+    # ("sasgen12", gd.sasgen_sid),
+    # ("church11", gd.church_gis_sid),
     ("box_colgan13", gd.marine_ice_loss(gd.box_gis_smb)),
 ])
 
 op = np.arange(1970, 2009, 1)
 observation_period["gis_sid"] = {
+    "broeke16": None,
+    "forsberg17": None,
     "box_colgan13": None,
-    "church11": op,
-    "sasgen12": np.arange(
-        1992,
-        2013,
-        1)}
+    # "church11": op,
+    # "sasgen12": np.arange( 1992, 2013, 1)
+    }
+
 temp_anomaly_year["gis_sid"] = {
+    "broeke16": 1961, # from Broeke et al. https://doi.org/10.1007/s40641-017-0084-8
+    "forsberg17": 1961, # from Broeke et al. https://doi.org/10.1007/s40641-017-0084-8
     "box_colgan13": None,
-    "church11": 1961,
-    "sasgen12": 1961}
+    # "church11": 1961,
+    # "sasgen12": 1961
+    }
+
 
 
 ######## Antarctica solid ice discharge ########

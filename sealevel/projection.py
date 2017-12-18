@@ -75,6 +75,8 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
 
     # print contrib_name, temp_anomaly_year
 
+    # convert index to str to avoid floating point issues
+    calibdata.index = [str(i) for i in calibdata.index]
     # use one of the observational dataset
     obs_choice = np.random.choice(calibdata.index.unique())
     params_of_obs = calibdata.loc[obs_choice]
@@ -95,7 +97,7 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         # can be variable number of parameters per each observation
         params = params_of_obs.iloc[paramset_choice,:]
         # print "pp",params
-    contributor = sl_contributor(params, temp_anomaly_year[obs_choice])
+    contributor = sl_contributor(params, temp_anomaly_year.loc[obs_choice][0])
     contrib = contributor.calc_contribution(
         driving_temperature,proj_period)
     # print contrib
@@ -107,6 +109,11 @@ def project_slr(scen, gmt, settings):
 
     projection_data = {}
 
+    temp_anomaly_years = pd.read_csv(os.path.join(
+        settings.calibfolder, "temp_anomaly_years.csv"),index_col=[0,1])
+    temp_anomaly_years = temp_anomaly_years.where(
+        pd.notnull(temp_anomaly_years), None)
+
     for i, contrib_name in enumerate(settings.project_these):
 
         print "conribution", contrib_name
@@ -116,7 +123,7 @@ def project_slr(scen, gmt, settings):
             os.path.join(settings.calibfolder, contrib_name+".csv"),
             index_col=[0])
 
-        temp_anomaly_year = cs.temp_anomaly_year[contrib_name]
+        temp_anomaly_year = temp_anomaly_years.loc[contrib_name]
         sl_contributor = cf.contributor_functions[contrib_name]
 
         proj = np.zeros([len(settings.proj_period), settings.nrealizations])

@@ -192,4 +192,4 @@ temp_anomaly_year["ant_smb"] = {"ligtenberg13": None}
 ######## Antarctica Deconto & Pollard (2016) emulator ########
 
 # Using the original ensemble member names of DP16, i.e. 1.22 ... 29.33
-temp_anomaly_year["ant_dp16"] = {d:None for d in np.arange(1,30,1.)+0.22}
+temp_anomaly_year["ant_dp16"] = {str(d):None for d in np.arange(1,30,1.)+0.22}

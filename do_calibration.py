@@ -196,3 +196,11 @@ if "ant_smb" in settings.calibrate_these:
 
     ais_smb_params.to_csv(os.path.join(settings.calibfolder, "ant_smb.csv"))
 
+# write anomaly years from calibration settings to a csv
+# which will be read by do_projections.
+temp_anomaly_year_to_csv = {(ok, ik): values for ok, innerdict in
+    cs.temp_anomaly_year.iteritems() for ik, values in innerdict.iteritems()}
+temp_anomaly_year_to_csv = pd.DataFrame(temp_anomaly_year_to_csv, index=[0]).T
+temp_anomaly_year_to_csv.index.names = ["Component", "Observation"]
+temp_anomaly_year_to_csv.columns = ["temperature anomaly year"]
+temp_anomaly_year_to_csv.to_csv(os.path.join(settings.calibfolder, "temp_anomaly_years.csv"))

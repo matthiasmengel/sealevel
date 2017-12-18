@@ -16,11 +16,7 @@
     function.
 """
 
-# import os
-# import numpy as np
-# import cPickle as pickle
-# import dimarray as da
-# import pandas as pd
+
 import settings
 reload(settings)
 import sealevel.projection as pr
@@ -36,7 +32,5 @@ if __name__ == "__main__":
 
         print "scenario", scen
 
-        # projection_data[scen] = {}
         gmt = mag.magicc_gmt[scen]
-
         pr.project_slr(scen, gmt, settings)

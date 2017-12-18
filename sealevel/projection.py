@@ -137,7 +137,9 @@ def project_slr(scen, gmt, settings):
 
         projection_data[contrib_name] = pdata
 
-    # print projection_data
+    if not os.path.exists(settings.projected_slr_folder):
+        os.makedirs(settings.projected_slr_folder)
+
     fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
     da.Dataset(projection_data).write_nc(os.path.join(
         settings.projected_slr_folder,fname))

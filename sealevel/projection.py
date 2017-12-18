@@ -17,8 +17,6 @@ import os
 import numpy as np
 import pandas as pd
 import dimarray as da
-import calib_settings as cs
-reload(cs)
 import sealevel.contributor_functions as cf
 reload(cf)
 
@@ -143,3 +141,5 @@ def project_slr(scen, gmt, settings):
     fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
     da.Dataset(projection_data).write_nc(os.path.join(
         settings.projected_slr_folder,fname))
+    print "Sea level projection data written to"
+    print settings.projected_slr_folder

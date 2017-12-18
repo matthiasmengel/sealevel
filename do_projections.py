@@ -19,18 +19,25 @@
 
 import settings
 reload(settings)
-import sealevel.projection as pr
-reload(pr)
-import sealevel.get_magicc_gmt_data as mag
-reload(mag)
+import sealevel.projection
+
+if settings.probablistic_climate:
+    import sealevel.get_magicc_gmt_data as mag
+    reload(mag)
+else:
+    import sealevel.get_ipcc_data
 
 if __name__ == "__main__":
-
-    projection_data = {}
 
     for scen in settings.scenarios:
 
         print "scenario", scen
 
-        gmt = mag.magicc_gmt[scen]
-        pr.project_slr(scen, gmt, settings)
+        if settings.probablistic_climate:
+            # 600 member ensemble
+            gmt = mag.magicc_gmt[scen]
+        else:
+            # single timeseries from IPCC AR5, for illustration and testing
+            gmt = sealevel.get_ipcc_data.tas_data[scen]
+
+        sealevel.projection.project_slr(scen, gmt, settings)

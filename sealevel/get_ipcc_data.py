@@ -14,11 +14,10 @@
 
 import os
 import numpy as np
-
+import dimarray as da
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir, "data/input/")
-
 
 ######## IPCC mean sl contributions ########
 
@@ -84,3 +83,30 @@ ipcc_contrib_estimates["gis"] = {}
 for rcp in ["RCP3PD", "RCP45", "RCP85"]:
     ipcc_contrib_estimates["gis"][rcp] = (
         ipcc_contrib_estimates["gis_sid"][rcp] + ipcc_contrib_estimates["gis_smb"][rcp])
+
+
+######## IPCC global mean temperature estimate ########
+
+## get IPCC AR5 global mean temperature pathways for each RCP scenario
+## they can be downloaded from
+## http://www.ipcc.ch/report/ar5/wg1/docs/ar5_wg1_annexI_all.zip
+
+## define 1951-1980 to preindustrial (1850-1860)
+## global temperature increase based on hadCrut v4.0 data
+## see sealevel/get_gmt_data.py for calculation
+preind_to_1951_1980 = 0.2640
+
+tas_data = {}
+for scen in ['rcp26','rcp45','rcp60','rcp85']:
+    try:
+        tas = np.loadtxt(os.path.join(inputdatadir,'ipcc_ar5',
+                 'WGIAR5_FD_AnnexI_series_tas_modelmean_'+scen+'_world_annual.txt'))
+    except IOError:
+        raise IOError, ("IPCC global mean temperature data missing, "
+                        "please run sealevel/download_input_data.py")
+
+    tasd = da.DimArray(tas[:,1],dims="time",axes=tas[:,0])
+
+    ## create anomaly to hadcrutv4 1850-1860 mean
+    ## which was used throughout the study as "relative to preindustrial"
+    tas_data[scen] = tasd - tasd[1951:1980].mean() + preind_to_1951_1980

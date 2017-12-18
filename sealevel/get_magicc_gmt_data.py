@@ -35,23 +35,25 @@ invalid_runs = {
 }
 
 magicc_gmt = {}
-magicc_scen = ["RCP3PD", "RCP45", "RCP60", "RCP85"]
+
+nd = {"rcp26":"RCP3PD",'rcp45':"RCP45",'rcp60':"RCP60",'rcp85':"RCP85"}
+magicc_scen = ["rcp26", "rcp45", "rcp60", "rcp85"]
 
 for scen in magicc_scen:
 
     magicc_runs = np.loadtxt(
         inputdatadir +
         '/RcpHistoricallyConstrained/RCP.2500/' +
-        scen +
+        nd[scen] +
         '_histConstrain4Katja_DAT_SURFACE_TEMP.txt')
     magicc_years = np.array(magicc_runs[:, 0], dtype="int")
     magicc_runs = magicc_runs[:, 1:]
-    magicc_runs = np.delete(magicc_runs, invalid_runs[scen], axis=1)
+    magicc_runs = np.delete(magicc_runs, invalid_runs[nd[scen]], axis=1)
     magicc_gmt_scen = da.DimArray(
         magicc_runs, dims=[
             "time", "runnumber"], axes=[
             magicc_years, np.arange(
                 magicc_runs.shape[1])])
-    # harmonize along 1950-1980 mean, make them equvalent to giss
+    # relative to 1950-1980 mean, equvalent to giss
     magicc_gmt[scen] = magicc_gmt_scen - magicc_gmt_scen[1951:1980,
                                                          :].mean(axis=0) + ggd.preind_to_1951_1980

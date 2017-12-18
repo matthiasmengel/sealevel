@@ -21,8 +21,7 @@
 import os
 import numpy as np
 import dimarray as da
-# import sealevel as sl
-# reload(sl)
+import warnings
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir, "data")
@@ -314,15 +313,26 @@ class antarctica_dp16(contribution):
 
         # make the temperature relative to year 1850, as we calibrated
         # the fast_ant_sid contribution to gmt relative to 1850.
-        temperature -= temperature[1850]
+        try:
+            temperature -= temperature[1850]
+        except IndexError as error:
+            # allow running timeseries not reaching back to 1850, but
+            # not shorter than 1880, make it relative to first available year
+            if temperature.time[0] < 1880:
+                temperature -= temperature.ix[0]
+                warnings.warn("Global mean temperature does not reach back to 1850,\n"
+                    "but Deconto & Pollard Antarctic parametrization needs 1850 temperature.\n"
+                    "Using first available temperature as proxy. (Not later than 1880).",
+                    UserWarning)
+            else:
+                raise error
+
         # from dimarray to numpy array
         temperature = temperature[proj_period].values
 
         # return in meter
         return self.calc_solid_ice_discharge(temperature,
                    self.initial_icesheet_vol)/1.e3
-
-
 
 contributor_functions = {"thermexp":thermal_expansion, "gic":glaciers_and_icecaps,
                          "gis_smb":surfacemassbalance_gis, "gis_sid":solid_ice_discharge_gis,

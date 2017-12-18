@@ -12,19 +12,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # LICENSE.txt for more details.
 
-
+import os
 import numpy as np
 
 calibfolder = "data/calibration"
-projected_slr_folder = "data/projection"
 
-scenarios = ["RCP3PD", "RCP45", "RCP85"]
-
-contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
-
-project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb",
-                    "ant_sid","ant_dp16"]
-
+# The emulator of Deconto & Pollard ice sheet contribution is not
+# calibrated here. See github.com/matthiasmengel/fast_ant_sid for
+# the calibration of ant_dp16.
 calibrate_these = [
     "thermexp",
     "gic",
@@ -34,8 +29,29 @@ calibrate_these = [
     # "ant_sid",
     ]
 
+projected_slr_folder = "data/projection"
+scenarios = ["rcp26", "rcp45", "rcp85"]
+contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
+
+# PNAS 2016 like Antarctic ice sheet contributon
+project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb",
+                    "ant_sid"]
+
+# Nature Communications 2018 like Antarctic ice sheet contributon
+project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_dp16"]
+
 proj_period = np.arange(1900, 2101, 1)
 
 # the number of monte carlo samples, 10000 used in PNAS paper
 nrealizations = 100
 
+# only possible if you have an ensemble of global mean temperature
+# projections
+probablistic_climate = False
+
+# No edits below this line needed.
+# Convert relative to absolute paths, to make them accessible
+# across the operating system
+project_root = os.path.dirname(os.path.abspath(__file__))
+calibfolder = os.path.join(project_root, calibfolder)
+projected_slr_folder = os.path.join(project_root, projected_slr_folder)

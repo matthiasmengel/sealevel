@@ -9,13 +9,13 @@ Total sea level rise is the sum of the components.
 
 v.2.0.0: code as used for Mengel et al., Nature Communications 2017, forthcoming.
 
-v 1.0.0: code as used for Mengel et al., PNAS 2016, [http://dx.doi.org/10.1073/pnas.1500515113](http://dx.doi.org/10.1073/pnas.1500515113).
+v 1.0.0: code as used for Mengel et al., PNAS 2016, [https://dx.doi.org/10.1073/pnas.1500515113](https://dx.doi.org/10.1073/pnas.1500515113).
 
 If you make use of this code, please cite the respective paper.
 
 ### Making projections
 See the [examples/projections.ipynb](examples/projection.ipynb) for projections using a sample global temperature mean timeseries.
-If you do not have [jupyter](http://jupyter.org/) notebook, [install](http://jupyter.readthedocs.org/en/latest/install.html) it or look at [do_projection.py](do_projection.py).
+If you do not have [jupyter](http://jupyter.org/) notebook, [install](http://jupyter.readthedocs.org/en/latest/install.html) it or look at [do_projections.py](do_projections.py).
 
 ### Recalibrating the model
 See [do_calibration.py](do_calibration.py).

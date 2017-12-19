@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/50914429.svg)](https://zenodo.org/badge/latestdoi/50914429)
 
 ## Sea level constrained by observations and commitment
 

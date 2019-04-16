@@ -32,18 +32,16 @@ def get_percentiles(data):
     return np.percentile(data[-1, :], [5, 50, 95]) * 1.0e3
 
 
-def test_thermexp_projection():
+def projection(contrib_name):
 
-    contrib_name = "thermexp"
+    # contrib_name = "thermexp"
     calibdata = pd.read_csv(
         os.path.join(settings.calibfolder, contrib_name + ".csv"), index_col=[0]
     )
-
     temp_anomaly_year = temp_anomaly_years.loc[contrib_name]
     sl_contributor = cf.contributor_functions[contrib_name]
 
     proj = np.zeros([len(settings.proj_period), nrealizations])
-
     for n in realizations:
         slr, gmt_n, obs_choice, params = sealevel.projection.project(
             gmt,
@@ -59,3 +57,37 @@ def test_thermexp_projection():
     np.testing.assert_allclose(
         get_percentiles(proj), proj_testdata_n10.loc[contrib_name]
     )
+
+def test_thermexp_projection():
+
+    projection("thermexp")
+
+
+def test_gic_projection():
+
+    projection("gic")
+
+
+def test_gis_smb_projection():
+
+    projection("gis_smb")
+
+
+def test_gis_sid_projection():
+
+    projection("gis_sid")
+
+
+def test_ant_smb_projection():
+
+    projection("ant_smb")
+
+
+def test_ant_sid_projection():
+
+    projection("ant_sid")
+
+
+def test_ant_dp16_projection():
+
+    projection("ant_dp16")

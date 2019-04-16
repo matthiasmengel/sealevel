@@ -71,22 +71,18 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         gmt_choice = 0
         driving_temperature = gmt
 
-    # print contrib_name, temp_anomaly_year
-
     # convert index to str to avoid floating point issues
     calibdata.index = [str(i) for i in calibdata.index]
-    # use one of the observational dataset
+    # use a random choice of the observational dataset
     obs_choice = np.random.choice(calibdata.index.unique())
     params_of_obs = calibdata.loc[obs_choice]
-    # print params_of_obs
-    # temp_anomaly_year = params.temp_anomaly_year
 
     if obs_choice == "box_colgan13":
         driving_temperature += gis_colgan_temperature_offset
 
-        # for dp16, the different ensemble members are interpreted
-        # as different observations, so selection already happened
-        # above through obs_choice
+    # for dp16, the different ensemble members are interpreted
+    # as different observations, so selection already happened
+    # above through obs_choice
     if contrib_name == "ant_dp16":
         params = params_of_obs
     else:
@@ -105,6 +101,10 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
 
 def project_slr(scen, gmt, settings):
 
+    """ This is a convenience function to project several sea level
+    components and write them to netcdf files. It uses parameters from
+    settings.py """
+
     projection_data = {}
 
     temp_anomaly_years = pd.read_csv(os.path.join(
@@ -112,11 +112,12 @@ def project_slr(scen, gmt, settings):
     temp_anomaly_years = temp_anomaly_years.where(
         pd.notnull(temp_anomaly_years), None)
 
+    realizations = np.arange(settings.nrealizations)
+
     for i, contrib_name in enumerate(settings.project_these):
 
         print "conribution", contrib_name
 
-        realizations = np.arange(settings.nrealizations)
         calibdata = pd.read_csv(
             os.path.join(settings.calibfolder, contrib_name+".csv"),
             index_col=[0])
@@ -136,6 +137,12 @@ def project_slr(scen, gmt, settings):
                             dims=["time", "runnumber"])
 
         projection_data[contrib_name] = pdata
+
+    slr_total = 0.
+    for contrib_name in settings.project_these:
+        slr_total += projection_data[contrib_name]
+
+    projection_data["total"] = slr_total
 
     if not os.path.exists(settings.projected_slr_folder):
         os.makedirs(settings.projected_slr_folder)

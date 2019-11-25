@@ -14,23 +14,24 @@
 
 import os
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 import pandas as pd
 
 import settings
-reload(settings)
+import importlib
+importlib.reload(settings)
 import sealevel.calibration as calibration
-reload(calibration)
+importlib.reload(calibration)
 import sealevel.contributor_functions as cf
-reload(cf)
+importlib.reload(cf)
 import sealevel.get_calibration_data as gcd
-reload(gcd)
+importlib.reload(gcd)
 import sealevel.calib_settings as cs
-reload(cs)
+importlib.reload(cs)
 import sealevel.get_gmt_data as ggd
-reload(ggd)
+importlib.reload(ggd)
 import sealevel.projection as sl
-reload(sl)
+importlib.reload(sl)
 
 
 gmt = ggd.giss_temp
@@ -45,11 +46,11 @@ if "thermexp" in settings.calibrate_these:
     alpha_te = np.array([0.488, 0.458, 0.200, 0.214, 0.626, 0.386])
     sl_contributor = cf.thermal_expansion
 
-    te_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.thermexp_observations.keys(),alpha_te],
+    te_params = pd.DataFrame(index=pd.MultiIndex.from_product([list(cs.thermexp_observations.keys()),alpha_te],
         names=["observation","independent_param"]), columns=["dependent_param"])
 
     for obs_te in cs.thermexp_observations:
-        print obs_te
+        print(obs_te)
 
         observation_period = cs.observation_period["thermexp"][obs_te]
         temp_anomaly_year = cs.temp_anomaly_year["thermexp"][obs_te]
@@ -70,11 +71,11 @@ if "gic" in settings.calibrate_these:
     gic_modelno = np.arange(len(cf.gic_equi_functions))
 
     # gic_anth_params = {}
-    gic_anth_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gic_observations.keys(),gic_modelno],
+    gic_anth_params = pd.DataFrame(index=pd.MultiIndex.from_product([list(cs.gic_observations.keys()),gic_modelno],
         names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gic in enumerate(cs.gic_observations):
-        print "####", obs_gic
+        print("####", obs_gic)
         observation_period = cs.observation_period["gic"][obs_gic]
         temp_anomaly_year = cs.temp_anomaly_year["gic"][obs_gic]
         sl_observation = cs.gic_observations[obs_gic]
@@ -96,7 +97,7 @@ if "gis_smb" in settings.calibrate_these:
     # levermann 13 coefficients.
     gis_smb_coeff = np.arange(0.05, 0.22, 0.02)
 
-    gis_smb_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gis_smb_observations.keys(),gis_smb_coeff],
+    gis_smb_params = pd.DataFrame(index=pd.MultiIndex.from_product([list(cs.gis_smb_observations.keys()),gis_smb_coeff],
         names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gis in enumerate(cs.gis_smb_observations):
@@ -108,7 +109,7 @@ if "gis_smb" in settings.calibrate_these:
         if obs_gis == "box_colgan13":
             gmt_gis = ggd.giss_temp + sl.gis_colgan_temperature_offset
 
-        print "####", obs_gis
+        print("####", obs_gis)
         # print observation_period
         sl_observation = cs.gis_smb_observations[obs_gis]
         calib = calibration.Calibration(gmt_gis, "gis_smb", sl_observation,
@@ -128,7 +129,7 @@ if "gis_sid" in settings.calibrate_these:
     gis_sid_coeff = np.arange(-0.9, -0.45, 0.05)  # alpha
     # gis_sid_params = {}
 
-    gis_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.gis_sid_observations.keys(),gis_sid_coeff],
+    gis_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([list(cs.gis_sid_observations.keys()),gis_sid_coeff],
         names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_gis in enumerate(cs.gis_sid_observations):
@@ -140,7 +141,7 @@ if "gis_sid" in settings.calibrate_these:
         if obs_gis == "box_colgan13":
             gmt_gis = ggd.giss_temp + sl.gis_colgan_temperature_offset
 
-        print "####", obs_gis
+        print("####", obs_gis)
         # print observation_period
         sl_observation = cs.gis_sid_observations[obs_gis]
         calib = calibration.Calibration(gmt_gis, "gis_sid", sl_observation,
@@ -159,7 +160,7 @@ if "ant_sid" in settings.calibrate_these:
     # Levermann et al. PNAS (2013) coefficients.
     ant_sid_coeff = np.arange(1.0, 1.55, 0.05)
 
-    ant_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([cs.ant_sid_observations.keys(),ant_sid_coeff],
+    ant_sid_params = pd.DataFrame(index=pd.MultiIndex.from_product([list(cs.ant_sid_observations.keys()),ant_sid_coeff],
         names=["observation","independent_param"]), columns=["dependent_param"])
 
     for i, obs_ant_sid in enumerate(cs.ant_sid_observations):
@@ -167,7 +168,7 @@ if "ant_sid" in settings.calibrate_these:
         observation_period = cs.observation_period["ant_sid"][obs_ant_sid]
         temp_anomaly_year = cs.temp_anomaly_year["ant_sid"][obs_ant_sid]
 
-        print "####", obs_ant_sid
+        print("####", obs_ant_sid)
         # print observation_period
         sl_observation = cs.ant_sid_observations[obs_ant_sid]
         calib = calibration.Calibration(gmt, obs_ant_sid, sl_observation,
@@ -199,7 +200,7 @@ if "ant_smb" in settings.calibrate_these:
 # write anomaly years from calibration settings to a csv
 # which will be read by do_projections.
 temp_anomaly_year_to_csv = {(ok, ik): values for ok, innerdict in
-    cs.temp_anomaly_year.iteritems() for ik, values in innerdict.iteritems()}
+    cs.temp_anomaly_year.items() for ik, values in innerdict.items()}
 temp_anomaly_year_to_csv = pd.DataFrame(temp_anomaly_year_to_csv, index=[0]).T
 temp_anomaly_year_to_csv.index.names = ["Component", "Observation"]
 temp_anomaly_year_to_csv.columns = ["temperature anomaly year"]

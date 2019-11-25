@@ -18,12 +18,13 @@
 
 
 import settings
-reload(settings)
+import importlib
+importlib.reload(settings)
 import sealevel.projection
 
 if settings.probablistic_climate:
     import sealevel.get_magicc_gmt_data as mag
-    reload(mag)
+    importlib.reload(mag)
 else:
     import sealevel.get_ipcc_data
 
@@ -31,7 +32,7 @@ if __name__ == "__main__":
 
     for scen in settings.scenarios:
 
-        print "scenario", scen
+        print("scenario", scen)
 
         if settings.probablistic_climate:
             # 600 member ensemble

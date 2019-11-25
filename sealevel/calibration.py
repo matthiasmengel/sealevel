@@ -40,7 +40,7 @@ class Calibration(object):
         else:
             # restrict calibration period to available observations.
             if observation_period is None:
-                print "observation period none"
+                print("observation period none")
                 cal_period_0 = np.max(
                     [self.gmt.time[0], sl_observation.time[0]])
                 cal_period_1 = np.min(
@@ -88,7 +88,7 @@ class Calibration(object):
 
             optimal_tau[i], pcov = leastsq(calc_residuals, tau0)
 
-            print "cparam=", cparam, " tau=", optimal_tau[i]
+            print("cparam=", cparam, " tau=", optimal_tau[i])
 
         self.calibrated_parameter = optimal_tau
         return [self.commitment_parameter, optimal_tau]

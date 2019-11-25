@@ -27,23 +27,32 @@ calibrate_these = [
     "gis_sid",
     # "ant_smb",
     # "ant_sid",
-    ]
+]
 
 projected_slr_folder = "data/projection"
 scenarios = ["rcp26", "rcp45", "rcp85"]
 contrib_ids = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb", "ant_sid"]
 
 # PNAS 2016 like Antarctic ice sheet contributon
-project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_smb",
-                    "ant_sid"]
+project_these = [
+    "thermexp",
+    "gic",
+    "gis_smb",
+    "gis_sid",
+    "ant_smb",
+    "ant_sid",
+    "ant_dp16",
+]
+# project_these = ["ant_smb",
+#                     "ant_sid"]
 
 # Nature Communications 2018 like Antarctic ice sheet contributon
-project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_dp16"]
+# project_these = ["thermexp", "gic", "gis_smb", "gis_sid", "ant_dp16"]
 
 proj_period = np.arange(1900, 2101, 1)
 
 # the number of monte carlo samples, 10000 used in PNAS paper
-nrealizations = 100
+nrealizations = 10
 
 # only possible if you have an ensemble of global mean temperature
 # projections

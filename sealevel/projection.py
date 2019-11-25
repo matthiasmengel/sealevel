@@ -18,7 +18,9 @@ import numpy as np
 import pandas as pd
 import dimarray as da
 import sealevel.contributor_functions as cf
-reload(cf)
+import importlib
+
+importlib.reload(cf)
 
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,8 +35,16 @@ gis_colgan_temperature_offset = 0.5
 
 ######## sea level projection using for Monte-Carlo sampling ########
 
-def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
-            sample_number, contrib_name):
+
+def project(
+    gmt,
+    proj_period,
+    calibdata,
+    temp_anomaly_year,
+    sl_contributor,
+    sample_number,
+    contrib_name,
+):
     """
     Monte Carlo sampling for slr contribution
     for a single global mean temperature (gmt) timeseries or
@@ -89,14 +99,12 @@ def project(gmt, proj_period, calibdata, temp_anomaly_year, sl_contributor,
         # choose a random parameter set
         paramset_choice = np.random.randint(len(params_of_obs.index))
         # can be variable number of parameters per each observation
-        params = params_of_obs.iloc[paramset_choice,:]
+        params = params_of_obs.iloc[paramset_choice, :]
         # print "pp",params
     contributor = sl_contributor(params, temp_anomaly_year.loc[obs_choice][0])
-    contrib = contributor.calc_contribution(
-        driving_temperature,proj_period)
+    contrib = contributor.calc_contribution(driving_temperature, proj_period)
     # print contrib
     return [contrib, gmt_choice, obs_choice, params]
-
 
 
 def project_slr(scen, gmt, settings):
@@ -107,20 +115,20 @@ def project_slr(scen, gmt, settings):
 
     projection_data = {}
 
-    temp_anomaly_years = pd.read_csv(os.path.join(
-        settings.calibfolder, "temp_anomaly_years.csv"),index_col=[0,1])
-    temp_anomaly_years = temp_anomaly_years.where(
-        pd.notnull(temp_anomaly_years), None)
+    temp_anomaly_years = pd.read_csv(
+        os.path.join(settings.calibfolder, "temp_anomaly_years.csv"), index_col=[0, 1]
+    )
+    temp_anomaly_years = temp_anomaly_years.where(pd.notnull(temp_anomaly_years), None)
 
     realizations = np.arange(settings.nrealizations)
 
     for i, contrib_name in enumerate(settings.project_these):
 
-        print "conribution", contrib_name
+        print(("conribution", contrib_name))
 
         calibdata = pd.read_csv(
-            os.path.join(settings.calibfolder, contrib_name+".csv"),
-            index_col=[0])
+            os.path.join(settings.calibfolder, contrib_name + ".csv"), index_col=[0]
+        )
 
         temp_anomaly_year = temp_anomaly_years.loc[contrib_name]
         sl_contributor = cf.contributor_functions[contrib_name]
@@ -129,16 +137,23 @@ def project_slr(scen, gmt, settings):
 
         for n in realizations:
             slr, gmt_n, obs_choice, params = project(
-                gmt, settings.proj_period, calibdata, temp_anomaly_year,
-                sl_contributor, n, contrib_name)
+                gmt,
+                settings.proj_period,
+                calibdata,
+                temp_anomaly_year,
+                sl_contributor,
+                n,
+                contrib_name,
+            )
             proj[:, n] = slr
 
-        pdata = da.DimArray(proj, axes=[settings.proj_period, realizations],
-                            dims=["time", "runnumber"])
+        pdata = da.DimArray(
+            proj, axes=[settings.proj_period, realizations], dims=["time", "runnumber"]
+        )
 
         projection_data[contrib_name] = pdata
 
-    slr_total = 0.
+    slr_total = 0.0
     for contrib_name in settings.project_these:
         slr_total += projection_data[contrib_name]
 
@@ -147,8 +162,9 @@ def project_slr(scen, gmt, settings):
     if not os.path.exists(settings.projected_slr_folder):
         os.makedirs(settings.projected_slr_folder)
 
-    fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
-    da.Dataset(projection_data).write_nc(os.path.join(
-        settings.projected_slr_folder,fname))
-    print "Sea level projection data written to"
-    print settings.projected_slr_folder
+    fname = "projected_slr_" + scen + "_n" + str(settings.nrealizations) + ".nc"
+    da.Dataset(projection_data).write_nc(
+        os.path.join(settings.projected_slr_folder, fname)
+    )
+    print("Sea level projection data written to")
+    print((settings.projected_slr_folder))

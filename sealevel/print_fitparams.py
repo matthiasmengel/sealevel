@@ -13,7 +13,7 @@
 # LICENSE.txt for more details.
 
 import numpy as np
-import cPickle as pickle
+import pickle as pickle
 
 contrib_ids = ["thermexp", "gic", "gis_sid", "gis_smb", "ant_sid", "ant_smb"]
 rcpcoldict = {"RCP3PD": "#3b4ba8", "RCP45": "yellow", "RCP85": "#ee1d23"}
@@ -29,7 +29,7 @@ def minmax(array):
     return rd(np.min(array)) + " to " + rd(np.max(array))
 
 for name in contrib_ids:
-    print labels[name],
+    print(labels[name], end=' ')
     calibdata = pickle.load(open("../data/calibration/" + name + ".pkl", "rb"))
     calibrated_param = np.array([])
     for obs in calibdata["params"]:
@@ -37,5 +37,5 @@ for name in contrib_ids:
         cal_par_obs = calibdata["params"][obs].calibrated_parameter
         calibrated_param = np.append(calibrated_param, cal_par_obs)
 
-    print minmax(calibdata["params"][obs].commitment_parameter),
-    print minmax(calibrated_param)
+    print(minmax(calibdata["params"][obs].commitment_parameter), end=' ')
+    print(minmax(calibrated_param))

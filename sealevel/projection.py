@@ -116,7 +116,7 @@ def project_slr(scen, gmt, settings):
 
     for i, contrib_name in enumerate(settings.project_these):
 
-        print "conribution", contrib_name
+        print("conribution", contrib_name)
 
         calibdata = pd.read_csv(
             os.path.join(settings.calibfolder, contrib_name+".csv"),
@@ -150,5 +150,5 @@ def project_slr(scen, gmt, settings):
     fname = "projected_slr_"+scen+"_n"+str(settings.nrealizations)+".nc"
     da.Dataset(projection_data).write_nc(os.path.join(
         settings.projected_slr_folder,fname))
-    print "Sea level projection data written to"
-    print settings.projected_slr_folder
+    print("Sea level projection data written to")
+    print(settings.projected_slr_folder)

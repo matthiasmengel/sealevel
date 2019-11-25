@@ -36,6 +36,12 @@ or with conda
 
 `conda env create -f environment.yml`
 
+Install via
+
+`pip install -e .`
+
+to your environment and use the package elsewhere.
+
 The model is written in python. If this is new to you, you may have a look at [anaconda python](https://www.continuum.io/downloads). The code has not been tested for Windows. Adaptations to file path definitions would be needed.
 
 ### Dependencies

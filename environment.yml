@@ -1,4 +1,8 @@
-dimarray==1.0
-netCDF4==1.4.2
-numpy==1.17.3
-pandas==0.25.3
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
+dimarray=1.0=pypi_0
+netcdf4=1.4.2
+numpy=1.17.3
+pandas=0.25.3
+python=3.7.5

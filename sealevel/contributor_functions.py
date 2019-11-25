@@ -35,6 +35,7 @@ area_antarctica = 0.14e14  # m^2
 
 ## equilibrium sea level functions for mountain glaciers
 
+
 def gic_equi_func(equi_temp, a, b):
     """ assume exponential functional form. This is justified, because
     1) the function saturates for high temperatures.
@@ -46,7 +47,6 @@ def gic_equi_func(equi_temp, a, b):
 
 
 def func_creator(a, b):
-
     def func(equi_temp):
         """ same as gic_equi_func with explicit values for a and b as set by curve_fit. """
         return a * (1 - np.exp(-1 * b * equi_temp))
@@ -54,8 +54,9 @@ def func_creator(a, b):
     return func
 
 
-gic_equi_coeffs = np.loadtxt(os.path.join(inputdatadir,"glacier_equi",
-                             "glacier_equi_coefficients.csv"))
+gic_equi_coeffs = np.loadtxt(
+    os.path.join(inputdatadir, "glacier_equi", "glacier_equi_coefficients.csv")
+)
 gic_equi_functions = []
 for coeffs in gic_equi_coeffs:
     # print coeffs
@@ -63,7 +64,6 @@ for coeffs in gic_equi_coeffs:
 
 
 class contribution(object):
-
 
     """ General class for sea level contributors. """
 
@@ -80,13 +80,14 @@ class contribution(object):
 
         # for projection, tau needs not to be explicitely provided
         # as argument. in calibration it has to.
-        if tau is None: tau = self.tau
+        if tau is None:
+            tau = self.tau
 
         if self.temp_anomaly_year is not None:
             # do not let temperature drive ice loss before first year of SL
             # observation
             delta_gmt -= delta_gmt[self.temp_anomaly_year]
-            delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.
+            delta_gmt[delta_gmt.time < self.temp_anomaly_year] = 0.0
 
         delta_gmt = delta_gmt[proj_period].values
         sl_contrib = np.zeros_like(delta_gmt, dtype="float")
@@ -94,13 +95,11 @@ class contribution(object):
 
         for t in np.arange(1, len(delta_gmt), 1):
 
-            sl_rate = (self.equilibrium_sl(
-                delta_gmt[t - 1]) - sl_contrib[t - 1]) / tau
+            sl_rate = (self.equilibrium_sl(delta_gmt[t - 1]) - sl_contrib[t - 1]) / tau
             # sl_rate = np.maximum(sl_rate,0.)
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
         return sl_contrib
-
 
 
 class thermal_expansion(contribution):
@@ -153,7 +152,7 @@ class surfacemassbalance_gis(contribution):
         """ equilibrium response as in equ.3.
             alpha is the equilibrium sl sensitivity in m/K^2 """
 
-        return self.smb_coeff * np.sign(delta_temp) * delta_temp**2
+        return self.smb_coeff * np.sign(delta_temp) * delta_temp ** 2
 
 
 class surfacemassbalance_ais(contribution):
@@ -179,8 +178,7 @@ class surfacemassbalance_ais(contribution):
 
         for t in np.arange(1, len(delta_gmt), 1):
 
-            sl_rate = self.winkelmann_factor * \
-                self.smb_coeff * delta_gmt[t - 1]
+            sl_rate = self.winkelmann_factor * self.smb_coeff * delta_gmt[t - 1]
             sl_contrib[t] = sl_contrib[t - 1] + self.dtime * sl_rate
 
         # to m slr
@@ -206,7 +204,8 @@ class solid_ice_discharge_gis(contribution):
 
         # for projection, tau needs not to be explicitely provided
         # as argument. in calibration it has to.
-        if prefactor is None: prefactor = self.prefactor
+        if prefactor is None:
+            prefactor = self.prefactor
 
         oceantemp = temperature
 
@@ -214,7 +213,7 @@ class solid_ice_discharge_gis(contribution):
             # do not let temperature drive ice loss before first year of SL
             # observation
             oceantemp -= oceantemp[self.temp_anomaly_year]
-            oceantemp[oceantemp.time < self.temp_anomaly_year] = 0.
+            oceantemp[oceantemp.time < self.temp_anomaly_year] = 0.0
 
         otemp = oceantemp[proj_period].values
         # print otemp
@@ -225,8 +224,9 @@ class solid_ice_discharge_gis(contribution):
             # integrate over t to yield slr, see winkelmann response function
             # paper p. 2581
             tp = np.arange(t)
-            discharge_rate = prefactor * \
-                np.trapz(otemp[tp] * ((t - tp))**self.alpha, dx=self.dtime)
+            discharge_rate = prefactor * np.trapz(
+                otemp[tp] * ((t - tp)) ** self.alpha, dx=self.dtime
+            )
             discharge_rate = np.maximum(discharge_rate, 0.0)
             discharge[t] = discharge[t - 1] + self.dtime * discharge_rate
 
@@ -240,11 +240,9 @@ class solid_ice_discharge_ais(contribution):
         See M. Mengel et al., PNAS (2016), Materials and Methods
     """
 
-
     def equilibrium_sl(self, delta_temp):
         """ see equ. 6 in Materials and Methods. """
         return self.alpha * delta_temp
-
 
 
 class antarctica_dp16(contribution):
@@ -262,19 +260,18 @@ class antarctica_dp16(contribution):
         # maximum ice volume that can be lost
         # see github.com/matthiasmengel/fast_ant_sid for why
         # we use this hardcoded value.
-        max_volume_to_lose = 17560. # in m
+        max_volume_to_lose = 17560.0  # in m
         self.initial_icesheet_vol = max_volume_to_lose
-
 
     def square(arg):
 
         """ quadratic temperature sensitvity """
 
-        return np.sign(arg)*np.square(arg)
+        return np.sign(arg) * np.square(arg)
 
-
-    def calc_solid_ice_discharge(self, forcing_temperature,
-        initial_icesheet_vol, temp_sensitivity=square):
+    def calc_solid_ice_discharge(
+        self, forcing_temperature, initial_icesheet_vol, temp_sensitivity=square
+    ):
 
         """ Solid ice discharge as used in Nauels et al. 2017, ERL, submitted.
             Assuming yearly time step, or dtime=1.
@@ -284,28 +281,30 @@ class antarctica_dp16(contribution):
 
         def slow_discharge(volume, temperature, temp0, sid_sens):
             # negative rates mean ice volume loss
-            return sid_sens*volume*temp_sensitivity(temperature-temp0)
+            return sid_sens * volume * temp_sensitivity(temperature - temp0)
 
         ## time spans forcing period
-        time = np.arange(0,len(forcing_temperature),1)
+        time = np.arange(0, len(forcing_temperature), 1)
 
         icesheet_vol = np.zeros_like(forcing_temperature)
         icesheet_vol[0] = initial_icesheet_vol
         slr_from_sid = np.zeros_like(forcing_temperature)
 
         # negative rates lead to sea level rise
-        fast_sid = fast_rate*np.array(forcing_temperature > temp_thresh,
-                                          dtype = np.float)
+        fast_sid = fast_rate * np.array(
+            forcing_temperature > temp_thresh, dtype=np.float
+        )
 
         for t in time[0:-1]:
-            sid_slow = slow_discharge(icesheet_vol[t], forcing_temperature[t],
-                                       temp0, sid_sens)
+            sid_slow = slow_discharge(
+                icesheet_vol[t], forcing_temperature[t], temp0, sid_sens
+            )
 
             # yearly discharge rate cannot be larger than remaining volume
-            discharge = np.minimum(icesheet_vol[t], sid_slow+fast_sid[t])
+            discharge = np.minimum(icesheet_vol[t], sid_slow + fast_sid[t])
             # positive sid rates mean ice volume loss
-            icesheet_vol[t+1] = icesheet_vol[t] - discharge
-            slr_from_sid[t+1] = initial_icesheet_vol - icesheet_vol[t+1]
+            icesheet_vol[t + 1] = icesheet_vol[t] - discharge
+            slr_from_sid[t + 1] = initial_icesheet_vol - icesheet_vol[t + 1]
 
         return slr_from_sid
 
@@ -320,10 +319,12 @@ class antarctica_dp16(contribution):
             # not shorter than 1880, make it relative to first available year
             if temperature.time[0] < 1880:
                 temperature -= temperature.ix[0]
-                warnings.warn("Global mean temperature does not reach back to 1850,\n"
+                warnings.warn(
+                    "Global mean temperature does not reach back to 1850,\n"
                     "but Deconto & Pollard Antarctic parametrization needs 1850 temperature.\n"
                     "Using first available temperature as proxy. (Not later than 1880).",
-                    UserWarning)
+                    UserWarning,
+                )
             else:
                 raise error
 
@@ -331,10 +332,18 @@ class antarctica_dp16(contribution):
         temperature = temperature[proj_period].values
 
         # return in meter
-        return self.calc_solid_ice_discharge(temperature,
-                   self.initial_icesheet_vol)/1.e3
+        return (
+            self.calc_solid_ice_discharge(temperature, self.initial_icesheet_vol)
+            / 1.0e3
+        )
 
-contributor_functions = {"thermexp":thermal_expansion, "gic":glaciers_and_icecaps,
-                         "gis_smb":surfacemassbalance_gis, "gis_sid":solid_ice_discharge_gis,
-                         "ant_smb":surfacemassbalance_ais, "ant_sid":solid_ice_discharge_ais,
-                         "ant_dp16":antarctica_dp16}
+
+contributor_functions = {
+    "thermexp": thermal_expansion,
+    "gic": glaciers_and_icecaps,
+    "gis_smb": surfacemassbalance_gis,
+    "gis_sid": solid_ice_discharge_gis,
+    "ant_smb": surfacemassbalance_ais,
+    "ant_sid": solid_ice_discharge_ais,
+    "ant_dp16": antarctica_dp16,
+}

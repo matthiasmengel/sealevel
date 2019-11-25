@@ -27,12 +27,13 @@ import os
 import scipy.io
 import numpy as np
 from scipy import optimize
-import get_calibration_data as gcd
+from . import get_calibration_data as gcd
+import importlib
 
-reload(gcd)
-import get_gmt_data as ggd
+importlib.reload(gcd)
+from . import get_gmt_data as ggd
 
-reload(ggd)
+importlib.reload(ggd)
 
 basedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 inputdatadir = os.path.join(basedir, "data/input/")

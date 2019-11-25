@@ -7,7 +7,7 @@ datadir = "../data/input/"
 
 def download(info, source, targetdir, target=None):
 
-    print "##", info, "##"
+    print("##", info, "##")
 
     targetfolder = datadir + targetdir
     cmd = "mkdir -p " + targetfolder

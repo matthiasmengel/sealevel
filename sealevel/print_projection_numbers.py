@@ -31,7 +31,7 @@ import dimarray as da
 import optparse
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import timeit
-import cPickle as pickle
+import pickle as pickle
 
 # make use of -n or -g flags with this script
 parser = optparse.OptionParser()
@@ -53,7 +53,7 @@ labels = {"gic": "Mountain glaciers", "thermexp": "Thermal expansion", "gis_sid"
 if opts.get_data:
     realizations = 10000
     realizations = realizations if opts.realizations is None else opts.realizations
-    print "use", realizations, "realizations"
+    print("use", realizations, "realizations")
     projection_data = pickle.load(
         open(
             "../data/projection/projected_slr_" +
@@ -76,12 +76,12 @@ def rd(array, percentile, years):
 ## switch for the 2081-2100 mean
 printyr = 2100
 #printyr = np.arange(2081,2101,1)
-print "## years", printyr
+print("## years", printyr)
 
 
-print "RCP3PD", "RCP45", "RCP85"
+print("RCP3PD", "RCP45", "RCP85")
 for i, name in enumerate(contrib_ids):
-    print labels[name], ":",
+    print(labels[name], ":", end=' ')
     for k, scen in enumerate(["RCP3PD", "RCP45", "RCP85", ]):
 
         contrib = projection_data[scen][name] * 1.e3
@@ -89,9 +89,9 @@ for i, name in enumerate(contrib_ids):
         contrib = contrib - contrib[1986:2005, :].mean(axis="time")
 
         if scen != "RCP85":
-            print rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")",
+            print(rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")", end=' ')
         else:
-            print rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")"
+            print(rd(contrib, 50, printyr), "(", rd(contrib, 5, printyr), "to", rd(contrib, 95, printyr), ")")
 
 #### total slr; sum up contributions first ####
 
@@ -100,7 +100,7 @@ def rdd(numb):
     # in mm
     return '%s' % float('%.4g' % numb)
 
-print "total", ":",
+print("total", ":", end=' ')
 for k, scen in enumerate(["RCP3PD", "RCP45", "RCP85", ]):
     total_slr = da.zeros_like(projection_data[scen]["thermexp"])
     for i, name in enumerate(contrib_ids):
@@ -120,4 +120,4 @@ for k, scen in enumerate(["RCP3PD", "RCP45", "RCP85", ]):
     low = np.percentile(mn, 5)
     med = np.percentile(mn, 50)
     upp = np.percentile(mn, 95)
-    print rdd(med), "(", rdd(low), "to", rdd(upp), ")",
+    print(rdd(med), "(", rdd(low), "to", rdd(upp), ")", end=' ')

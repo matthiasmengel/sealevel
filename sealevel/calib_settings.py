@@ -13,9 +13,10 @@
 # LICENSE.txt for more details.
 
 import numpy as np
-import get_calibration_data as gd
+from . import get_calibration_data as gd
+import importlib
 
-reload(gd)
+importlib.reload(gd)
 import collections
 
 """ calibration setting for each component.

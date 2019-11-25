@@ -16,9 +16,10 @@ import matplotlib.pylab as plt
 import numpy as np
 import dimarray as da
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import get_ipcc_data as ipcc
+from . import get_ipcc_data as ipcc
+import importlib
 
-reload(ipcc)
+importlib.reload(ipcc)
 
 # plot settings
 plt.rcParams["xtick.major.pad"] = 10

@@ -19,9 +19,10 @@
 import os
 import numpy as np
 import dimarray as da
-import get_gmt_data as ggd
+from . import get_gmt_data as ggd
+import importlib
 
-reload(ggd)
+importlib.reload(ggd)
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 inputdatadir = os.path.join(project_dir, "data/input/")

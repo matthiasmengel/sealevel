@@ -18,8 +18,9 @@ import numpy as np
 import pandas as pd
 import dimarray as da
 import sealevel.contributor_functions as cf
+import importlib
 
-reload(cf)
+importlib.reload(cf)
 
 
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -123,7 +124,7 @@ def project_slr(scen, gmt, settings):
 
     for i, contrib_name in enumerate(settings.project_these):
 
-        print("conribution", contrib_name)
+        print(("conribution", contrib_name))
 
         calibdata = pd.read_csv(
             os.path.join(settings.calibfolder, contrib_name + ".csv"), index_col=[0]
@@ -166,4 +167,4 @@ def project_slr(scen, gmt, settings):
         os.path.join(settings.projected_slr_folder, fname)
     )
     print("Sea level projection data written to")
-    print(settings.projected_slr_folder)
+    print((settings.projected_slr_folder))

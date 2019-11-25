@@ -102,7 +102,7 @@ for scen in ['rcp26','rcp45','rcp60','rcp85']:
         tas = np.loadtxt(os.path.join(inputdatadir,'ipcc_ar5',
                  'WGIAR5_FD_AnnexI_series_tas_modelmean_'+scen+'_world_annual.txt'))
     except IOError:
-        raise IOError, ("IPCC global mean temperature data missing, "
+        raise IOError("IPCC global mean temperature data missing, "
                         "please run sealevel/download_input_data.py")
 
     tasd = da.DimArray(tas[:,1],dims="time",axes=tas[:,0])
